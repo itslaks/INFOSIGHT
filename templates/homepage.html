@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infosight</title>
+    <link rel="stylesheet" href="static/homepage.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnVMY7MOrR4s3oafIq05ktG5OCyolXyJQ",
+            authDomain: "reconbot-8f5ac.firebaseapp.com",
+            projectId: "reconbot-8f5ac",
+            storageBucket: "reconbot-8f5ac.appspot.com",
+            messagingSenderId: "156458243689",
+            appId: "1:156458243689:web:a96ac86d5b4d98d377f4f8"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+</head>
+<body>
+    <div class="topnav">
+        <nav>
+            <ul>
+                <h1><a href="#home">Home</a></h1>
+                <h2><a href="#news">Features</a></h2>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                <li><a href="#about">Authors</a></li>
+                <li><a href="#about">Other Creations</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a class="active" href="#" id="logoutBtn">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <section>
+        <h1>Infosight</h1>
+        <input type="text" id="searchBar" placeholder="Search...">
+        <div class="buttons" id="but3">
+            <button id="btn1" onclick="window.location.href='/portscanner'">PORT SCANNER</button>
+            <button id="btn2" onclick="window.location.href='/infosight_ai'">Infosight AI</button>
+            <button id="btn3" onclick="window.location.href='/lana_AI'">Lana AI</button>
+        </div>
+        <div class="buttons" id="id">
+            <button id="btn4" onclick="window.location.href='/filescanner'">Webseeker</button>
+            <button id="btn5" onclick="window.location.href='/osint'">Trackylst</button>
+            <button id="btn6" onclick="window.location.href='/infocrypt'">InfoCrypt</button>
+        </div>
+        <div class="buttons" id="but6">
+            <button id="btn7">HASH FINDER</button>
+            <button id="btn8" onclick="window.location.href='/cybersentry_ai'">CyberSentry AI</button>
+            <button id="btn9" onclick="window.location.href='/telecheck'">Telecheck</button>
+        </div>
+        <div id="results"></div>
+        <div class="social-links">
+            <!-- Social links can be added here -->
+        </div>
+    </section>
+
+    <script>
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            firebase.auth().signOut().then(() => {
+                console.log('User signed out.');
+                window.location.href = '{{ url_for("home") }}';
+            }).catch((error) => {
+                console.error('Sign Out Error', error);
+            });
+        });
+    </script>
+</body>
+</html>

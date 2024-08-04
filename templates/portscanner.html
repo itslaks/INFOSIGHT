@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INFOSIGHT - Port Scanner</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        body, html {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #000;
+            color: #00ffff;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-image: url('https://example.com/starfield.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .loading-screen, .circle-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            z-index: 1000;
+            animation: insideOut 1.5s ease-in-out;
+        }
+        @keyframes insideOut {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        .container {
+            display: none;
+            flex-direction: column;
+            width: 90vw;
+            height: 90vh;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .left-panel, .right-panel {
+            flex: 1;
+            padding: 20px;
+        }
+        .left-panel {
+            overflow-y: auto;
+            border-right: 1px solid #00ffff;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            font-size: 3rem;
+            color: #00ffff;
+            text-shadow: 0 0 15px #00ffff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .scan-types, .ip-input-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            background: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+        .scan-type {
+            margin: 15px 0;
+            font-size: 1.4rem;
+        }
+        .scan-type input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+        .scan-type label {
+            color: #ffffff;
+            text-shadow: 0 0 5px #00ffff;
+            cursor: pointer;
+        }
+        .scan-type:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        input[type="text"], button {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00ffff;
+        }
+        button {
+            background: linear-gradient(135deg, #00ffff, #0080ff);
+            color: #000;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #0080ff, #00ffff);
+            box-shadow: 0 0 20px #00ffff;
+        }
+        #status, #error {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: rgba(0, 255, 255, 0.1);
+            font-size: 1.2rem;
+        }
+        #error {
+            color: #ff3333;
+        }
+        #results-container {
+            flex-grow: 1;
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            background-color: rgba(0, 255, 255, 0.05);
+            overflow: auto;
+            padding: 15px;
+            font-size: 1rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        #results-container h3 {
+            color: #00ffff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        #results-container pre {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .hidden {
+            display: none;
+        }
+        .visible {
+            display: block;
+        }
+        .lightsaber-input {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .lightsaber-input input {
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid #00ffff;
+            color: #00ffff;
+            font-size: 1.2rem;
+            padding: 10px;
+            width: 60px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .lightsaber-input label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 1rem;
+            color: #00ffff;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .lightsaber-input input:focus ~ label,
+        .lightsaber-input input:valid ~ label {
+            top: -20px;
+            font-size: 0.8rem;
+            color: #0080ff;
+        }
+        .ip-input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .ip-input-container input {
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loading-screen">Initializing Port Scanner...</div>
+    <div class="container" id="container">
+        <div class="left-panel">
+            <h1> Port Scanner</h1>
+            <form id="scan-form">
+                <div id="ip-section" class="hidden">
+                    <div class="lightsaber-input ip-input-container">
+                        <input type="text" id="ip-address-1" maxlength="3" placeholder="000">
+                        <input type="text" id="ip-address-2" maxlength="3" placeholder="000">
+                        <input type="text" id="ip-address-3" maxlength="3" placeholder="000">
+                        <input type="text" id="ip-address-4" maxlength="3" placeholder="000">
+                    </div>
+                    <button type="button" id="next-button">Proceed to Scan Selection</button>
+                </div>
+                <div id="scan-section" class="hidden">
+                    <div class="scan-types">
+                        {% for key, value in scan_types.items() %}
+                            <div class="scan-type">
+                                <input type="radio" name="scan_types" value="{{ key }}" id="{{ key }}">
+                                <label for="{{ key }}">{{ key.replace('_', ' ').title() }} ({{ value }})</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit">Initiate Scan</button>
+                </div>
+            </form>
+            <div id="status"></div>
+            <div id="error"></div>
+        </div>
+        <div class="right-panel">
+            <div id="results-container"></div>
+        </div>
+    </div>
+    <div class="circle-loading hidden" id="circle-loading">
+        <svg viewBox="0 0 50 50" class="circle">
+            <circle cx="25" cy="25" r="20" fill="none" stroke="#00ffff" stroke-width="5"></circle>
+        </svg>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loadingScreen = document.getElementById('loading-screen');
+        const container = document.getElementById('container');
+        const ipSection = document.getElementById('ip-section');
+        const scanSection = document.getElementById('scan-section');
+        const circleLoading = document.getElementById('circle-loading');
+        const resultsContainer = document.getElementById('results-container');
+        
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            container.style.display = 'flex';
+            ipSection.classList.remove('hidden');
+        }, 2000);
+    
+        document.getElementById('next-button').addEventListener('click', function() {
+            const ipParts = [
+                document.getElementById('ip-address-1'),
+                document.getElementById('ip-address-2'),
+                document.getElementById('ip-address-3'),
+                document.getElementById('ip-address-4')
+            ];
+            const ipAddress = ipParts.map(part => part.value.trim()).join('.');
+    
+            if (ipParts.some(part => part.value.trim() === '')) {
+                document.getElementById('error').innerText = 'Please enter a complete IP address';
+                return;
+            }
+    
+            ipSection.classList.add('hidden');
+            scanSection.classList.remove('hidden');
+        });
+    
+        document.querySelectorAll('.lightsaber-input input').forEach((input, index, inputs) => {
+            input.addEventListener('input', function() {
+                if (this.value.length === 3 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+    
+            input.addEventListener('keydown', function(event) {
+                if (event.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+    
+        document.getElementById('scan-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+            const ipParts = [
+                document.getElementById('ip-address-1').value,
+                document.getElementById('ip-address-2').value,
+                document.getElementById('ip-address-3').value,
+                document.getElementById('ip-address-4').value
+            ];
+            const ipAddress = ipParts.join('.');
+    
+            const scanTypes = Array.from(document.querySelectorAll('input[name="scan_types"]:checked')).map(input => input.value);
+    
+            if (scanTypes.length === 0) {
+                document.getElementById('error').innerText = 'Please select a scan type';
+                return;
+            }
+    
+            scanSection.classList.add('hidden');
+            circleLoading.classList.remove('hidden');
+    
+            fetch('/portscanner/scan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ip_address: ipAddress,
+                    scan_types: scanTypes
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                circleLoading.classList.add('hidden');
+                if (data.error) {
+                    document.getElementById('error').innerText = data.error;
+                } else {
+                    // Clear previous results
+                    resultsContainer.innerHTML = '';
+                    
+                    // Iterate through each scan type and its results
+                    for (const [scanType, result] of Object.entries(data)) {
+                        const resultElement = document.createElement('div');
+                        resultElement.innerHTML = `<h3>${scanType}</h3><pre>${result}</pre>`;
+                        resultsContainer.appendChild(resultElement);
+                    }
+                    
+                    resultsContainer.classList.add('visible');
+                }
+            })
+            .catch(error => {
+                circleLoading.classList.add('hidden');
+                document.getElementById('error').innerText = 'An error occurred during the scan';
+                console.error('Scan error:', error);
+            });
+        });
+    });
+</script>
+</body>
+</html>

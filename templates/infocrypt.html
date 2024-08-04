@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infocrypt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Orbitron', sans-serif;
+            background: #000000; /* Pitch black background */
+            color: #e0e0e0; /* Light gray font color */
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            color: #f0f0f0; /* Light gray for heading */
+            text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+        }
+
+        .input-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input, select, button {
+            width: 100%;
+            max-width: 500px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 2px solid #00ffcc;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ffcc;
+            font-size: 1.2rem;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        input::placeholder {
+            color: rgba(0, 255, 255, 0.7);
+        }
+
+        select {
+            background-color: rgba(0, 0, 0, 0.9);
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300ffcc%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 1rem top 50%;
+            background-size: 0.65rem auto;
+            appearance: none;
+            padding-right: 2rem; /* Space for the icon */
+        }
+
+        button {
+            background: #00ffcc;
+            color: #000000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #00cc99;
+        }
+
+        #result {
+            width: 100%;
+            max-width: 500px;
+            min-height: 100px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 5px;
+            padding: 1rem;
+            word-break: break-all;
+            margin-top: 2rem;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .loading {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #00ffcc;
+            border-top: 5px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Info Crypt</h1>
+        <div class="input-group">
+            <input type="text" id="text" placeholder="Enter your secret message">
+            <select id="algorithm">
+                <option value="" disabled selected>Choose your algorithm</option>
+                <optgroup label="Hashing">
+                    <option value="CRC32">CRC32</option>
+                    <option value="SHA-256">SHA-256</option>
+                    <option value="SHA3-256">SHA3-256</option>
+                    <option value="BLAKE2b">BLAKE2b</option>
+                    <option value="Whirlpool">Whirlpool</option>
+                    <option value="SHAKE-128">SHAKE-128</option>
+                    <option value="SHA-512">SHA-512</option>
+                    <option value="SHA-384">SHA-384</option>
+                </optgroup>
+                <optgroup label="Encryption">
+                    <option value="AES-128">AES-128</option>
+                    <option value="AES-256">AES-256</option>
+                    <option value="ChaCha20">ChaCha20</option>
+                    <option value="RSA">RSA</option>
+                </optgroup>
+            </select>
+            <button onclick="processData('hash')">Hash</button>
+            <button onclick="processData('encrypt')">Encrypt</button>
+            <button onclick="processData('decrypt')">Decrypt</button>
+        </div>
+        <div class="loading" id="loading"></div>
+        <div id="result"></div>
+    </div>
+    <script>
+    function processData(action) {
+        const text = document.getElementById('text').value;
+        const algorithm = document.getElementById('algorithm').value;
+    
+        if (!text || !algorithm) {
+            alert('Please enter a message and select an algorithm');
+            return;
+        }
+    
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('result').innerHTML = '';
+    
+        fetch('/infocrypt/process', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text, algorithm, action })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loading').style.display = 'none';
+            const resultDiv = document.getElementById('result');
+            if (data.error) {
+                resultDiv.innerHTML = `<span style="color:#ff6b6b;">${data.error}</span>`;
+            } else {
+                resultDiv.innerHTML = `<span>${data.result}</span>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('result').innerHTML = '<span style="color:#ff6b6b;">An error occurred</span>';
+        });
+    }
+    </script>
+</body>
+</html>

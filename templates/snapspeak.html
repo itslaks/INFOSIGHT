@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> SNAPSPEAK_AI </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff6600;
+            --bg-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --accent-color: #2c2c2c;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        .upload-section {
+            background-color: var(--accent-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+        .custom-file-upload {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .custom-file-upload:hover {
+            background-color: #ff8533;
+        }
+        #imageInput {
+            display: none;
+        }
+        #generateBtn {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        #generateBtn:hover {
+            background-color: #ff8533;
+        }
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            flex: 1;
+        }
+        .image-preview {
+            background-color: var(--accent-color);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+            background-color: var(--accent-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .loading-bar {
+            height: 4px;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        .loading-text {
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            color: var(--primary-color);
+        }
+        .description-section {
+            background-color: var(--accent-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .description {
+            font-size: 2rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .process {
+            font-size: 1rem;
+            color: #a0a0a0;
+        }
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        .particle {
+            position: absolute;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            animation: particleAnimation 15s infinite ease-in-out;
+        }
+        @keyframes particleAnimation {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0;
+            }
+            25% {
+                opacity: 1;
+            }
+            50% {
+                transform: translate(100px, 100px) scale(2);
+            }
+            75% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation" id="backgroundAnimation"></div>
+    <div class="container">
+        <header>
+            <h1> SNAPSPEAK_AI </h1>
+        </header>
+        <div class="upload-section">
+            <label for="imageInput" class="custom-file-upload">
+                <i class="fas fa-upload"></i> Choose Image
+            </label>
+            <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
+            <button id="generateBtn" onclick="generateDescription()">
+                <i class="fas fa-magic"></i> Generate Description
+            </button>
+        </div>
+        <div class="content-area">
+            <div class="image-preview" id="imagePreview"></div>
+            <div class="loading">
+                <div class="loading-bar" id="loadingBar"></div>
+                <p class="loading-text" id="loadingText"></p>
+            </div>
+            <div class="description-section">
+                <div class="description" id="description"></div>
+                <div class="process" id="process"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function previewImage(event) {
+            const imagePreview = document.getElementById('imagePreview');
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        async function generateDescription() {
+            const fileInput = document.getElementById('imageInput');
+            const descriptionDiv = document.getElementById('description');
+            const processDiv = document.getElementById('process');
+            const loadingDiv = document.querySelector('.loading');
+            const loadingBar = document.getElementById('loadingBar');
+            const loadingText = document.getElementById('loadingText');
+        
+            if (!fileInput.files[0]) {
+                alert("Please select an image first.");
+                return;
+            }
+        
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+        
+            descriptionDiv.innerText = "";
+            processDiv.innerText = "";
+            loadingDiv.style.display = "block";
+        
+            const loadingMessages = [
+                "Analyzing image composition...",
+                "Identifying key elements...",
+                "Processing color patterns...",
+                "Interpreting visual context...",
+                "Generating semantic description...",
+                "Refining output...",
+            ];
+        
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 3.33;
+                loadingBar.style.width = `${Math.min(progress, 100)}%`;
+                loadingText.innerText = loadingMessages[Math.floor(progress / 20)];
+                if (progress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        
+            try {
+                const response = await fetch('/snapspeak_ai/api/predict/', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+        
+                clearInterval(interval);
+                loadingDiv.style.display = "none";
+        
+                if (result.data && result.data.length > 0) {
+                    const emojis = ["🖼️", "📸", "🎨", "👀", "💡"];
+                    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                    descriptionDiv.innerHTML = `<p>${emoji} ${result.data[0]}</p>`;
+                    if (result.time) {
+                        processDiv.innerText = `⏱️ Time taken: ${result.time.toFixed(2)}s`;
+                    }
+                } else {
+                    descriptionDiv.innerText = "No description generated.";
+                }
+            } catch (error) {
+                clearInterval(interval);
+                loadingDiv.style.display = "none";
+                descriptionDiv.innerText = "An error occurred: " + error.message;
+                console.error('Error:', error);
+            }
+        }
+</script>
+    
+</body> 
+</html>
