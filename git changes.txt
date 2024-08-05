@@ -1,0 +1,33 @@
+To update your GitHub repository with changes from your local system, follow these steps:
+
+1. **Make Changes Locally**:
+   - Modify, add, or delete files in your local repository as needed.
+
+2. **Stage the Changes**:
+   - Add the changes to the staging area with the `git add` command. This prepares the files for committing.
+     ```bash
+     git add .
+     ```
+   - You can specify individual files instead of `.` if you only want to add specific changes.
+
+3. **Commit the Changes**:
+   - Commit the staged changes to your local repository with a descriptive message.
+     ```bash
+     git commit -m "Describe your changes here"
+     ```
+
+4. **Push the Changes to GitHub**:
+   - Push the committed changes to your GitHub repository on the `master` branch (or `main`, if you're using that).
+     ```bash
+     git push origin master
+     ```
+
+Here’s a summary of the commands:
+
+```bash
+git add .
+git commit -m "Your commit message"
+git push origin master
+```
+
+This process updates the `master` branch of your GitHub repository with the changes made in your local repository. If you need to make changes to another branch, replace `master` with the appropriate branch name.

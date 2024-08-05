@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INFOSIGHT</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+  
+  <div class="wrapper">
+    <form action="#" id="loginForm">
+      <h2>INFOSIGHT</h2>
+      <img class="kunju" src="static\images\logo.png" alt="logo" />
+      <button id="submit" type="button">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span> LOGIN
+      </button>
+    </form>
+  </div>
+
+  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+
+  <!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+
+  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+  
+  <script>
+    console.log("JavaScript is running");
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("DOM fully loaded and parsed");
+    });
+  </script>
+</body>
+</html>
