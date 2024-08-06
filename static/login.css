@@ -38,10 +38,6 @@ body::before {
   -webkit-backdrop-filter: blur(8px);
 }
 
-.kunju{
-  margin-top: -200px;
-}
-
 form {
   display: flex;
   flex-direction: column;
