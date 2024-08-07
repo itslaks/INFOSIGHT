@@ -197,7 +197,7 @@ def run_nmap_scan(ip_address, scan_types):
 
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-        timeout = 60
+        timeout = 6000
         start_time = time.time()
         while process.poll() is None:
             if time.time() - start_time > timeout:
