@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding as asym_paddi
 from cryptography.hazmat.primitives import hashes, serialization
 
 # Create a blueprint
-infocrypt= Blueprint('infocrypt', __name__, template_folder='templates')
+infocrypt = Blueprint('infocrypt', __name__, template_folder='templates')
 
 @infocrypt.route('/')
 def index():
@@ -27,10 +27,9 @@ def hash_data(data, algorithm):
             return hashlib.sha3_256(data.encode()).hexdigest()
         elif algorithm == 'BLAKE2b':
             return hashlib.blake2b(data.encode()).hexdigest()
-        elif algorithm == 'Whirlpool':
-            return hashlib.new('whirlpool', data.encode()).hexdigest()
         elif algorithm == 'SHAKE-128':
-            return hashlib.shake_128(data.encode()).digest(32).hex()
+            h = hashlib.shake_128(data.encode())
+            return h.digest(32).hex()
         elif algorithm == 'SHA-512':
             return hashlib.sha512(data.encode()).hexdigest()
         elif algorithm == 'SHA-384':
@@ -55,10 +54,9 @@ def encrypt_data(data, algorithm):
         elif algorithm == 'ChaCha20':
             key = os.urandom(32)
             nonce = os.urandom(16)
-            algorithm = algorithms.ChaCha20(key, nonce)
-            cipher = Cipher(algorithm, mode=None, backend=default_backend())
+            cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None, backend=default_backend())
             encryptor = cipher.encryptor()
-            encrypted = encryptor.update(data.encode())
+            encrypted = encryptor.update(data.encode()) + encryptor.finalize()
             return base64.b64encode(nonce + key + encrypted).decode()
         elif algorithm == 'RSA':
             private_key = rsa.generate_private_key(
@@ -80,7 +78,9 @@ def encrypt_data(data, algorithm):
                 format=serialization.PrivateFormat.PKCS8,
                 encryption_algorithm=serialization.NoEncryption()
             )
-            return base64.b64encode(private_pem + encrypted).decode()
+            private_pem_b64 = base64.b64encode(private_pem).decode()
+            encrypted_b64 = base64.b64encode(encrypted).decode()
+            return private_pem_b64 + ":" + encrypted_b64
         else:
             return None
     except Exception as e:
@@ -88,29 +88,34 @@ def encrypt_data(data, algorithm):
 
 def decrypt_data(encrypted_data, algorithm):
     try:
-        decoded_data = base64.b64decode(encrypted_data)
         if algorithm in ['AES-128', 'AES-256']:
+            decoded_data = base64.b64decode(encrypted_data)
             key_size = 16 if algorithm == 'AES-128' else 32
             iv = decoded_data[:16]
-            key = decoded_data[16:16+key_size]
-            ciphertext = decoded_data[16+key_size:]
+            key = decoded_data[16:16 + key_size]
+            ciphertext = decoded_data[16 + key_size:]
             cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
             decryptor = cipher.decryptor()
             padded_data = decryptor.update(ciphertext) + decryptor.finalize()
             unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
             data = unpadder.update(padded_data) + unpadder.finalize()
             return data.decode()
+        
         elif algorithm == 'ChaCha20':
+            decoded_data = base64.b64decode(encrypted_data)
             nonce = decoded_data[:16]
             key = decoded_data[16:48]
             ciphertext = decoded_data[48:]
-            algorithm = algorithms.ChaCha20(key, nonce)
-            cipher = Cipher(algorithm, mode=None, backend=default_backend())
+            cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None, backend=default_backend())
             decryptor = cipher.decryptor()
-            return decryptor.update(ciphertext).decode()
+            decrypted = decryptor.update(ciphertext) + decryptor.finalize()
+            return decrypted.decode()
+        
         elif algorithm == 'RSA':
-            private_pem = decoded_data[:1674]  # Assuming 2048-bit key
-            ciphertext = decoded_data[1674:]
+            private_pem_b64, encrypted_b64 = encrypted_data.split(":")
+            private_pem = base64.b64decode(private_pem_b64)
+            ciphertext = base64.b64decode(encrypted_b64)
+            
             private_key = serialization.load_pem_private_key(
                 private_pem,
                 password=None,
@@ -125,6 +130,7 @@ def decrypt_data(encrypted_data, algorithm):
                 )
             )
             return plaintext.decode()
+        
         else:
             return None
     except Exception as e:
