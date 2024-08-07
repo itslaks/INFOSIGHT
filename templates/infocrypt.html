@@ -94,13 +94,14 @@
         #result {
             width: 100%;
             max-width: 500px;
-            min-height: 100px;
+            max-height: 200px; /* Set a maximum height for the result container */
             background: rgba(0, 0, 0, 0.9);
             border-radius: 5px;
             padding: 1rem;
             word-break: break-all;
             margin-top: 2rem;
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            overflow-y: auto; /* Enable vertical scrolling */
         }
 
         .loading {
@@ -128,11 +129,9 @@
             <select id="algorithm">
                 <option value="" disabled selected>Choose your algorithm</option>
                 <optgroup label="Hashing">
-                    <option value="CRC32">CRC32</option>
                     <option value="SHA-256">SHA-256</option>
                     <option value="SHA3-256">SHA3-256</option>
                     <option value="BLAKE2b">BLAKE2b</option>
-                    <option value="Whirlpool">Whirlpool</option>
                     <option value="SHAKE-128">SHAKE-128</option>
                     <option value="SHA-512">SHA-512</option>
                     <option value="SHA-384">SHA-384</option>

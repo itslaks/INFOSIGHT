@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const message = document.querySelector('.message');
   const button = document.querySelector('.animated-button');
   
-  message.style.animation = 'slideIn 2s forwards';
-  button.style.animation = 'buttonSlideIn 2s forwards'; // Delay button animation by 2s
+  message.style.animation = 'slideIn 0s forwards  ';
+  button.style.animation = 'buttonSlideIn 0s forwards '; // Delay button animation by 2s
 });
 
 const particleContainer = document.querySelector('.particles');

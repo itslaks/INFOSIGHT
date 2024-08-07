@@ -37,6 +37,7 @@ def get_gemini_response(query):
         print(f"Error fetching response from Gemini API: {e}")
         return None
 
+# Repeat for other tools
 @cybersentry_ai.route('/')
 def index():
     return render_template('cybersentry_AI.html')

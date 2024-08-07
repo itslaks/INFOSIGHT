@@ -4,77 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tracklyst</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #121212;
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #1a1a1a;
             color: #ffffff;
             margin: 0;
-            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
+            height: 100vh;
+            padding: 20px;
+        }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
         }
         .container {
-            max-width: 1200px;
-            width: 100%;
+            width: 90%;
+            max-width: 1400px;
             padding: 20px;
             box-sizing: border-box;
-            border: 3px solid #FF6F61;
+            border: 2px solid #00ffff;
             border-radius: 10px;
-            box-shadow: 0 0 10px #FF6F61, 0 0 20px #FF6F61, 0 0 30px #FF6F61;
-            animation: borderPulse 2s infinite alternate;
-        }
-        @keyframes borderPulse {
-            from { box-shadow: 0 0 10px #FF6F61, 0 0 20px #FF6F61, 0 0 30px #FF6F61; }
-            to { box-shadow: 0 0 15px #FF6F61, 0 0 30px #FF6F61, 0 0 45px #FF6F61; }
+            background-color: #2b2b2b;
+            text-align: center;
+            overflow-y: auto;
         }
         h1 {
-            font-size: 3.5em;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #FF6F61;
-            text-shadow: 0 0 5px #FF6F61, 0 0 10px #FF6F61, 0 0 15px #FF6F61;
-            animation: neon 1.5s ease-in-out infinite alternate, float 6s ease-in-out infinite;
-        }
-        @keyframes neon {
-            from { text-shadow: 0 0 5px #FF6F61, 0 0 10px #FF6F61, 0 0 15px #FF6F61; }
-            to { text-shadow: 0 0 2px #FF6F61, 0 0 5px #FF6F61, 0 0 7px #FF6F61; }
+            font-size: 2.5em;
+            color: #00ffff;
+            margin: 20px 0;
         }
         #searchForm {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
+            width: 100%;
         }
         input[type="text"] {
             padding: 10px;
-            font-size: 1em;
+            font-size: 1.2em;
             border: none;
             border-radius: 5px 0 0 5px;
             background-color: #333;
             color: #fff;
-            transition: all 0.3s ease;
+            width: 70%;
         }
         input[type="text"]:focus {
             outline: none;
-            box-shadow: 0 0 10px #FF6F61;
+            box-shadow: 0 0 5px #00ffff;
         }
         button {
             padding: 10px 20px;
-            font-size: 1em;
+            font-size: 1.2em;
             border: none;
             border-radius: 0 5px 5px 0;
-            background-color: #FF6F61;
-            color: #fff;
+            background-color: #00ffff;
+            color: #000;
             cursor: pointer;
             transition: all 0.3s ease;
         }
         button:hover {
-            background-color: #ff1493;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 111, 97, 0.4);
+            background-color: #00cccc;
         }
         #alphabet {
             display: flex;
@@ -83,8 +78,8 @@
             margin-bottom: 20px;
         }
         .letter {
-            margin: 5px;
-            padding: 10px;
+            margin: 2px;
+            padding: 8px;
             background-color: #333;
             color: #fff;
             border-radius: 5px;
@@ -92,9 +87,8 @@
             transition: all 0.3s ease;
         }
         .letter:hover, .letter.active {
-            background-color: #FF6F61;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 111, 97, 0.4);
+            background-color: #00ffff;
+            color: #000;
         }
         #results {
             display: grid;
@@ -109,29 +103,14 @@
             transition: all 0.3s ease;
             overflow: hidden;
             position: relative;
+            text-align: left;
         }
         .platform:hover {
             transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 5px 15px rgba(255, 111, 97, 0.4);
-        }
-        .platform:before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: #FF6F61;
-            z-index: -1;
-            filter: blur(10px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .platform:hover:before {
-            opacity: 1;
+            box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
         }
         .platform a {
-            color: #FF6F61;
+            color: #00ffff;
             text-decoration: none;
             display: block;
             overflow: hidden;
@@ -152,54 +131,22 @@
         }
         .particle {
             position: absolute;
-            background: #FF6F61;
-            border-radius: 20%;
-            opacity: 0.3;
-        }
-        .home-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #FF6F61;
-            color: #ffffff;
-            border: none;
+            background: #00ffff;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(255, 111, 97, 0.4);
-        }
-        .home-button:hover {
-            background-color: #ff1493;
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255, 111, 97, 0.6);
-        }
-        .home-icon {
-            width: 30px;
-            height: 30px;
+            opacity: 0.3;
         }
     </style>
 </head>
 <body>
-    <div class="background-animation"></div>
-    <a href="new.html" class="home-button" title="Go to Dashboard">
-        <svg class="home-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-    </a>
-    <div class="container">
-        <h1>Tracklyst</h1>
+    <h1>Tracklyst</h1>
+    <div class="header">
         <form id="searchForm">
             <input type="text" id="username" placeholder="Enter username" required>
             <button type="submit">Search</button>
         </form>
-        <div id="alphabet"></div>
+    </div>
+    <div id="alphabet" class="container"></div>
+    <div class="container">
         <div id="results"></div>
     </div>
 
@@ -209,6 +156,8 @@
         const usernameInput = document.getElementById('username');
         const resultsDiv = document.getElementById('results');
         const alphabetDiv = document.getElementById('alphabet');
+       
+        let allResults = {};
 
         // Create alphabet buttons
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letter => {
@@ -250,6 +199,7 @@
                 if (data.error) {
                     resultsDiv.innerHTML = '<p>No profiles found</p>';
                 } else {
+                    allResults = data;
                     displayResults(data);
                 }
             })
@@ -272,14 +222,14 @@
         function filterResults(letter) {
             document.querySelectorAll('.letter').forEach(el => el.classList.remove('active'));
             document.querySelector(`.letter:nth-child(${letter.charCodeAt(0) - 64})`).classList.add('active');
-           
-            document.querySelectorAll('.platform').forEach(el => {
-                if (el.querySelector('strong').textContent[0].toUpperCase() === letter) {
-                    el.style.display = 'block';
-                } else {
-                    el.style.display = 'none';
+            
+            const filteredData = {};
+            for (let platform in allResults) {
+                if (platform.charAt(0).toUpperCase() === letter) {
+                    filteredData[platform] = allResults[platform];
                 }
-            });
+            }
+            displayResults(filteredData);
         }
 
         // Background animation

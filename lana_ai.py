@@ -6,6 +6,7 @@ from gtts import gTTS
 from time import time
 import threading
 import signal
+import numpy as np
 
 # Create a blueprint
 lana_ai = Blueprint('lana_ai', __name__, template_folder='templates')
@@ -33,6 +34,9 @@ latest_transcription = ""
 latest_response = ""
 conversation_lock = threading.Lock()
 stop_event = threading.Event()
+
+# New variables for audio visualization
+audio_data = np.array([])
 
 def log(message: str):
     """Print and write to status.txt"""
@@ -62,6 +66,7 @@ def transcribe_audio() -> str:
 
 def record_audio() -> str:
     """Record audio using speech_recognition"""
+    global audio_data
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         log("Listening...")
@@ -71,6 +76,10 @@ def record_audio() -> str:
     with open(RECORDING_PATH, "wb") as f:
         f.write(audio.get_wav_data())
     log("Done recording")
+    
+    # Update audio_data for visualization
+    audio_data = np.frombuffer(audio.get_raw_data(), dtype=np.int16)
+    
     return "Recording complete"
 
 def listen_and_respond():
@@ -149,13 +158,14 @@ def stop_listening():
 
 @lana_ai.route('/process_audio', methods=['POST'])
 def process_audio():
-    global latest_transcription, latest_response
+    global latest_transcription, latest_response, audio_data
     with conversation_lock:
         if latest_transcription or latest_response:
             response = {
                 "status": "success",
                 "user_transcript": latest_transcription,
-                "response": latest_response
+                "response": latest_response,
+                "audio_data": audio_data.tolist()  # Convert numpy array to list for JSON serialization
             }
             latest_transcription = ""
             latest_response = ""
