@@ -1,14 +1,21 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify,render_template
+import os
 import re
 import dns.resolver
 import requests
 import whois
 import ssl
-import socket
 from urllib.parse import urlparse
 import tldextract
 
-app = Flask(_name_)
+app = Flask(__name__)
+
+# Path to the directory containing enscan.html
+HTML_FILE_DIRECTORY = os.path.join(os.path.dirname(__file__), 'DNS')
+
+@app.route('/')
+def index():
+    return render_template('enscan.html')
 
 def is_valid_email(email):
     pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
@@ -25,14 +32,16 @@ def email_domain_check(email):
             "email": email,
             "domain": domain,
             "mx_records": [str(mx.exchange) for mx in mx_records],
-            "valid": True
+            "valid": True,
+            "domain_status": "Active"
         }
     except Exception as e:
         return {
             "email": email,
             "domain": domain,
             "valid": False,
-            "error": f"Error: {str(e)}"
+            "error": f"Error: {str(e)}",
+            "domain_status": "Inactive or Error"
         }
 
 def classify_url(url):
@@ -48,7 +57,8 @@ def classify_url(url):
             "is_phishing": False,
             "is_onion": False,
             "is_shortener": False,
-            "is_fake": False
+            "is_fake": False,
+            "http_https_status": parsed_url.scheme
         }
 
         if extracted.suffix == 'onion':
@@ -82,18 +92,23 @@ def classify_url(url):
 
 def dns_enumeration(domain):
     results = {}
-    record_types = ['A', 'AAAA', 'NS', 'MX', 'TXT', 'SOA', 'PTR', 'CNAME', 'SRV']
+    valid_record_types = ['A', 'AAAA', 'NS', 'MX', 'TXT', 'SOA', 'PTR', 'CNAME', 'SRV', 'CAA', 'HINFO', 'NAPTR']
     
-    for record_type in record_types:
+    for record_type in valid_record_types:
         try:
             answers = dns.resolver.resolve(domain, record_type)
             results[record_type] = [str(rdata) for rdata in answers]
+        except dns.resolver.NoAnswer:
+            results[record_type] = []
         except Exception as e:
             results[record_type] = [f"Error: {str(e)}"]
     
+    filtered_results = {rtype: rdata for rtype, rdata in results.items() if rdata}
+    
     return {
         "domain": domain,
-        "dns_records": results
+        "dns_records": filtered_results,
+        "description": "Detailed DNS record information including various record types."
     }
 
 def whois_lookup(domain):
@@ -107,7 +122,9 @@ def whois_lookup(domain):
                 "creation_date": w.creation_date,
                 "expiration_date": w.expiration_date,
                 "name_servers": w.name_servers,
-                "status": w.status
+                "status": w.status,
+                "updated_date": w.updated_date,
+                "domain_age": (w.expiration_date - w.creation_date).days if w.creation_date and w.expiration_date else "Unknown"
             }
         }
     except Exception as e:
@@ -119,7 +136,18 @@ def whois_lookup(domain):
 def ip_geolocation(ip):
     try:
         response = requests.get(f'https://geolocation-db.com/json/{ip}&position=true')
-        return response.json()
+        data = response.json()
+        return {
+            "ip": ip,
+            "geolocation": {
+                "country": data.get("country_name", "Unknown"),
+                "state": data.get("state", "Unknown"),
+                "city": data.get("city", "Unknown"),
+                "latitude": data.get("latitude", "Unknown"),
+                "longitude": data.get("longitude", "Unknown"),
+                "ISP": data.get("ISP", "Unknown")
+            }
+        }
     except Exception as e:
         return {
             "ip": ip,
@@ -135,11 +163,12 @@ def ssl_certificate_info(domain):
         return {
             "domain": domain,
             "ssl_certificate": {
-                "issuer": cert.get('issuer'),
-                "subject": cert.get('subject'),
+                "issuer": dict(cert.get('issuer')),
+                "subject": dict(cert.get('subject')),
                 "not_before": cert.get('notBefore'),
                 "not_after": cert.get('notAfter'),
-                "version": cert.get('version')
+                "version": cert.get('version'),
+                "serial_number": cert.get('serialNumber')
             }
         }
     except Exception as e:
@@ -147,10 +176,6 @@ def ssl_certificate_info(domain):
             "domain": domain,
             "error": f"Unable to retrieve SSL certificate info: {str(e)}"
         }
-
-@app.route('/')
-def index():
-    return render_template('enscan.html')
 
 @app.route('/api/scan', methods=['POST'])
 def scan_endpoint():
@@ -163,14 +188,22 @@ def scan_endpoint():
 
         if '@' in input_data:
             result = email_domain_check(input_data)
-        elif re.match(r'^\d+\.\d+\.\d+\.\d+$', input_data):
+        elif re.match(r'^\d+\.\d+\.\d+\.\d+$', input_data) or re.match(r'^[0-9a-fA-F:]+$', input_data):
             result = ip_geolocation(input_data)
         elif input_data.startswith(('http://', 'https://')):
             result = classify_url(input_data)
         elif '.' in input_data:
-            result = dns_enumeration(input_data)
-            result.update(whois_lookup(input_data))
-            result.update(ssl_certificate_info(input_data))
+            dns_result = dns_enumeration(input_data)
+            whois_result = whois_lookup(input_data)
+            ssl_result = ssl_certificate_info(input_data)
+            
+            result = {
+                "domain": input_data,
+                "dns_records": dns_result.get("dns_records", {}),
+                "whois_info": whois_result.get("whois_info", {}),
+                "ssl_certificate": ssl_result.get("ssl_certificate", {}),
+                "description": "Combined DNS, WHOIS, and SSL certificate information."
+            }
         else:
             result = {"error": "Invalid input type"}
 
@@ -179,5 +212,5 @@ def scan_endpoint():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run(debug=True)
