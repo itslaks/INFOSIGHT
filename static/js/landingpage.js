@@ -15,9 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const message = document.querySelector('.message');
   const button = document.querySelector('.animated-button');
   
-  message.style.animation = 'slideIn 0s forwards  ';
-  button.style.animation = 'buttonSlideIn 0s forwards '; // Delay button animation by 2s
+  // Message will appemessar first
+  message.style.animation = 'slideIn 2s forwards'; 
+
+  // Button will appear after the message animation is complete
+  button.style.animation = 'buttonSlideIn 2s forwards 2s'; // Delay button animation by 2s (after message finishes)
 });
+
+
 
 const particleContainer = document.querySelector('.particles');
 const starBackground = document.querySelector('.star-background');
