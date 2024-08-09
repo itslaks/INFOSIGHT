@@ -11,8 +11,8 @@ body, html {
   font-optical-sizing: auto;
   font-weight: 600;
   font-style: normal;
-  background-image: url('landing.jpg'); 
-  background-size: contain; /* Ensures the entire image is visible */
+  background-image: url('landing.jpg');
+  background-size :contain;/* Ensures the entire image is visible */
   background-position: center; /* Centers the image */
   
 }
@@ -45,10 +45,8 @@ body, html {
 
 .container {
   height: 100vh;
-  text-align: center;
-  padding: 50px 20px;
   display: flex;
-  flex-direction: column;
+  
   justify-content: center;
   align-items: center;
   position: relative;
@@ -60,7 +58,7 @@ body, html {
   bottom: -100px;
   font-size: 5em;
   font-family: "Lexend", sans-serif;
-  margin-bottom: 100px;
+  margin-top: 80px;
   opacity: 0;
   animation: slideIn 2s forwards;
 }
@@ -71,13 +69,11 @@ body, html {
   color: white;
   text-decoration: none;
   border-radius: 30px;
-  margin-top: 100px;
-  margin-bottom: 100px;
   box-shadow: 0 0 15px rgba(255, 64, 129, 0.5);
   position: absolute;
   bottom: -100px;
   opacity: 0;
-  animation: buttonSlideIn 2s forwards 2s; /* Start animation after message animation */
+  animation: buttonSlideIn 2s forwards ; /* Start animation after message animation */
 }
 
 .animated-button:hover {
