@@ -6,185 +6,78 @@
     <title>Enhanced Scanner</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #f0f4f8, #e1e9f0);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+            color: #333;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            background-size: 200% 200%;
-            animation: gradientShift 6s ease infinite;
+            padding: 0;
         }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
         .container {
-            background-color: #ffffff;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            max-width: 350px;
-            width: 100%;
-            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            width: 90%;
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-
-        .container:hover {
-            transform: scale(1.03);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            background-color: #f9f9f9;
-        }
-
         h1 {
-            color: #2c3e50;
+            font-size: 1.8rem;
+            color: #4A90E2;
+            text-align: center;
             margin-bottom: 1rem;
-            font-size: 2rem;
-            position: relative;
         }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -5px;
-            width: 50%;
-            height: 4px;
-            background: #3498db;
-            border-radius: 2px;
-            transform: scaleX(0);
-            transform-origin: bottom right;
-            transition: transform 0.3s;
-        }
-
-        h1:hover::after {
-            transform: scaleX(1);
-            transform-origin: bottom left;
-        }
-
         .search-container {
-            position: relative;
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 1rem;
         }
-
-        input[type="text"] {
-            width: 92%;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            border: 2px solid #3498db;
-            border-radius: 6px;
+        .search-container input {
+            width: 80%;
+            padding: 0.8rem;
             font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-right: 1rem;
         }
-
-        input[type="text"]:focus {
-            border-color: #2980b9;
-            box-shadow: 0 0 8px rgba(41, 128, 185, 0.5);
-            transform: scale(1.02);
-        }
-
         button {
-            background-color: #3498db;
+            padding: 0.8rem 1.5rem;
+            background-color: #4A90E2;
             color: white;
-            padding: 0.75rem;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
+            transition: background-color 0.3s ease;
         }
-
-        button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 300%;
-            height: 300%;
-            background: rgba(84, 248, 248, 0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        button:hover::before {
-            opacity: 1;
-            animation: glow 1.5s infinite;
-        }
-
-        @keyframes glow {
-            0% {
-                box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-            }
-            100% {
-                box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-            }
-        }
-
         button:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(41, 128, 185, 0.5);
+            background-color: #357ABD;
         }
-
-        button:active {
-            background-color: #1f6f91;
-            transform: translateY(0);
-            box-shadow: 0 3px 6px rgba(26, 108, 167, 0.5);
-        }
-
-        #result {
+        #result-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
             margin-top: 1rem;
+        }
+        #result, #definition {
+            flex: 1;
             padding: 1rem;
             background-color: #f9f9f9;
             border-radius: 6px;
-            white-space: pre-wrap;
             font-family: monospace;
             font-size: 0.9rem;
             color: #34495e;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            position: relative;
+            overflow: auto;
         }
-
+        #definition {
+            font-family: Arial, sans-serif;
+            font-size: 1rem;
+            white-space: normal;
+        }
         .loading {
-            color: #7f8c8d;
-            font-style: italic;
-            position: relative;
-        }
-
-        .loading::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #3498db;
-            border-radius: 50%;
-            border-top: 2px solid transparent;
-            animation: spin 1s linear infinite;
-            transform: translate(-50%, -50%);
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            color: #999;
+            text-align: center;
+            font-size: 1.2rem;
         }
     </style>
 </head>
@@ -193,19 +86,28 @@
         <h1>EnScan - Enhanced Scanner</h1>
         <div class="search-container">
             <input type="text" id="input" placeholder="Enter email, URL, or domain">
+            <button onclick="scan()">Scan</button>
         </div>
-        <button onclick="scan()">Scan</button>
-        <div id="result"></div>
+        <div id="result-container">
+            <div id="result"></div>
+            <div id="definition"></div>
+        </div>
     </div>
 
     <script>
-        const input = document.getElementById('input');
-
-        // Scan function
         async function scan() {
-            const query = input.value;
+            const query = document.getElementById('input').value.trim();
             const resultDiv = document.getElementById('result');
+            const definitionDiv = document.getElementById('definition');
+            
+            if (!query) {
+                resultDiv.textContent = 'Please enter a valid input.';
+                definitionDiv.innerHTML = '';
+                return;
+            }
+
             resultDiv.innerHTML = '<p class="loading">Scanning... Please wait.</p>';
+            definitionDiv.innerHTML = '';
 
             try {
                 const response = await fetch('/api/scan', {
@@ -221,9 +123,30 @@
                 }
 
                 const result = await response.json();
-                resultDiv.innerHTML = '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+                if (result.error) {
+                    resultDiv.textContent = `Error: ${result.error}`;
+                    definitionDiv.innerHTML = '';
+                } else {
+                    // Display results
+                    const results = result.results || {};
+                    let resultContent = '<strong>Results:</strong><br>';
+                    for (const [key, value] of Object.entries(results)) {
+                        resultContent += `<strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}<br>`;
+                    }
+                    resultDiv.innerHTML = resultContent;
+
+                    // Display definitions
+                    const definitions = result.definitions || {};
+                    let definitionContent = '<strong>Definitions:</strong><br>';
+                    for (const [key, value] of Object.entries(definitions)) {
+                        definitionContent += `<strong>${key}:</strong> ${value}<br>`;
+                    }
+                    definitionDiv.innerHTML = definitionContent;
+                }
+
             } catch (error) {
                 resultDiv.textContent = `Error: ${error.message}`;
+                definitionDiv.innerHTML = '';
             }
         }
     </script>

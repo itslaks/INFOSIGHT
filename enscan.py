@@ -1,17 +1,11 @@
-from flask import Flask, request, jsonify,render_template
-import os
+from flask import Flask, request, jsonify, render_template
 import re
 import dns.resolver
 import requests
-import whois
-import ssl
 from urllib.parse import urlparse
 import tldextract
 
 app = Flask(__name__)
-
-# Path to the directory containing enscan.html
-HTML_FILE_DIRECTORY = os.path.join(os.path.dirname(__file__), 'DNS')
 
 @app.route('/')
 def index():
@@ -28,12 +22,27 @@ def email_domain_check(email):
     domain = email.split('@')[1]
     try:
         mx_records = dns.resolver.resolve(domain, 'MX')
-        return {
+        result = {
             "email": email,
             "domain": domain,
             "mx_records": [str(mx.exchange) for mx in mx_records],
             "valid": True,
-            "domain_status": "Active"
+            "domain_status": "Active",
+            "definitions": {
+                "MX": "Mail exchange record - maps a domain to a list of mail servers for that domain."
+            }
+        }
+        return result
+    except dns.resolver.NoAnswer:
+        return {
+            "email": email,
+            "domain": domain,
+            "valid": False,
+            "error": "Domain does not exist.",
+            "domain_status": "Inactive or Error",
+            "definitions": {
+                "MX": "Mail exchange record - maps a domain to a list of mail servers for that domain."
+            }
         }
     except Exception as e:
         return {
@@ -41,7 +50,10 @@ def email_domain_check(email):
             "domain": domain,
             "valid": False,
             "error": f"Error: {str(e)}",
-            "domain_status": "Inactive or Error"
+            "domain_status": "Inactive or Error",
+            "definitions": {
+                "MX": "Mail exchange record - maps a domain to a list of mail servers for that domain."
+            }
         }
 
 def classify_url(url):
@@ -77,140 +89,74 @@ def classify_url(url):
             risk_score = 0.7
             details["is_phishing"] = True
 
-        return {
+        result = {
             "url": url,
             "final_url": final_url,
             "classification": classification,
             "risk_score": risk_score,
-            "details": details
+            "details": details,
+            "definitions": {
+                "classification": "The classification of the URL based on its characteristics.",
+                "risk_score": "A numerical value representing the risk level of the URL.",
+                "is_phishing": "Indicates if the URL is potentially used for phishing.",
+                "is_onion": "Indicates if the URL belongs to the Tor network (onion domain).",
+                "is_shortener": "Indicates if the URL is a shortened link.",
+                "http_https_status": "Shows whether the URL uses HTTP or HTTPS."
+            }
         }
+        return result
     except Exception as e:
         return {
             "url": url,
-            "error": f"Unable to classify URL: {str(e)}"
+            "error": f"Unable to classify URL: {str(e)}",
+            "definitions": {
+                "classification": "The classification of the URL based on its characteristics.",
+                "risk_score": "A numerical value representing the risk level of the URL.",
+                "is_phishing": "Indicates if the URL is potentially used for phishing.",
+                "is_onion": "Indicates if the URL belongs to the Tor network (onion domain).",
+                "is_shortener": "Indicates if the URL is a shortened link.",
+                "http_https_status": "Shows whether the URL uses HTTP or HTTPS."
+            }
         }
 
 def dns_enumeration(domain):
     results = {}
-    valid_record_types = ['A', 'AAAA', 'NS', 'MX', 'TXT', 'SOA', 'PTR', 'CNAME', 'SRV', 'CAA', 'HINFO', 'NAPTR']
-    
+    valid_record_types = ['A', 'AAAA', 'NS', 'MX', 'TXT', 'SOA', 'PTR']
     for record_type in valid_record_types:
         try:
             answers = dns.resolver.resolve(domain, record_type)
-            results[record_type] = [str(rdata) for rdata in answers]
+            results[record_type] = [str(record) for record in answers]
         except dns.resolver.NoAnswer:
-            results[record_type] = []
+            results[record_type] = "Domain does not exist."
+        except dns.resolver.Timeout:
+            results[record_type] = "DNS query timed out."
         except Exception as e:
-            results[record_type] = [f"Error: {str(e)}"]
+            results[record_type] = f"Error: {str(e)}"
     
-    filtered_results = {rtype: rdata for rtype, rdata in results.items() if rdata}
-    
-    return {
-        "domain": domain,
-        "dns_records": filtered_results,
-        "description": "Detailed DNS record information including various record types."
+    results["definitions"] = {
+        "A": "Address record - maps a domain to an IPv4 address.",
+        "AAAA": "Address record - maps a domain to an IPv6 address.",
+        "NS": "Name server record - specifies authoritative DNS servers for the domain.",
+        "MX": "Mail exchange record - maps a domain to a list of mail servers for that domain.",
+        "TXT": "Text record - holds arbitrary text information.",
+        "SOA": "Start of Authority record - provides information about the DNS zone.",
+        "PTR": "Pointer record - maps an IP address to a domain name."
     }
-
-def whois_lookup(domain):
-    try:
-        w = whois.whois(domain)
-        return {
-            "domain": domain,
-            "whois_info": {
-                "domain_name": w.domain_name,
-                "registrar": w.registrar,
-                "creation_date": w.creation_date,
-                "expiration_date": w.expiration_date,
-                "name_servers": w.name_servers,
-                "status": w.status,
-                "updated_date": w.updated_date,
-                "domain_age": (w.expiration_date - w.creation_date).days if w.creation_date and w.expiration_date else "Unknown"
-            }
-        }
-    except Exception as e:
-        return {
-            "domain": domain,
-            "error": f"Unable to retrieve WHOIS info: {str(e)}"
-        }
-
-def ip_geolocation(ip):
-    try:
-        response = requests.get(f'https://geolocation-db.com/json/{ip}&position=true')
-        data = response.json()
-        return {
-            "ip": ip,
-            "geolocation": {
-                "country": data.get("country_name", "Unknown"),
-                "state": data.get("state", "Unknown"),
-                "city": data.get("city", "Unknown"),
-                "latitude": data.get("latitude", "Unknown"),
-                "longitude": data.get("longitude", "Unknown"),
-                "ISP": data.get("ISP", "Unknown")
-            }
-        }
-    except Exception as e:
-        return {
-            "ip": ip,
-            "error": f"Unable to retrieve IP geolocation: {str(e)}"
-        }
-
-def ssl_certificate_info(domain):
-    try:
-        conn = ssl.create_connection((domain, 443))
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS)
-        sock = context.wrap_socket(conn, server_hostname=domain)
-        cert = sock.getpeercert()
-        return {
-            "domain": domain,
-            "ssl_certificate": {
-                "issuer": dict(cert.get('issuer')),
-                "subject": dict(cert.get('subject')),
-                "not_before": cert.get('notBefore'),
-                "not_after": cert.get('notAfter'),
-                "version": cert.get('version'),
-                "serial_number": cert.get('serialNumber')
-            }
-        }
-    except Exception as e:
-        return {
-            "domain": domain,
-            "error": f"Unable to retrieve SSL certificate info: {str(e)}"
-        }
+    return results
 
 @app.route('/api/scan', methods=['POST'])
-def scan_endpoint():
-    try:
-        data = request.json
-        if not data or 'input' not in data:
-            return jsonify({"error": "Invalid input"}), 400
+def scan():
+    data = request.json
+    input_value = data.get('input', '').strip()
 
-        input_data = data['input']
+    if '@' in input_value:
+        result = email_domain_check(input_value)
+    elif urlparse(input_value).scheme in ['http', 'https']:
+        result = classify_url(input_value)
+    else:
+        result = dns_enumeration(input_value)
+    
+    return jsonify(result)
 
-        if '@' in input_data:
-            result = email_domain_check(input_data)
-        elif re.match(r'^\d+\.\d+\.\d+\.\d+$', input_data) or re.match(r'^[0-9a-fA-F:]+$', input_data):
-            result = ip_geolocation(input_data)
-        elif input_data.startswith(('http://', 'https://')):
-            result = classify_url(input_data)
-        elif '.' in input_data:
-            dns_result = dns_enumeration(input_data)
-            whois_result = whois_lookup(input_data)
-            ssl_result = ssl_certificate_info(input_data)
-            
-            result = {
-                "domain": input_data,
-                "dns_records": dns_result.get("dns_records", {}),
-                "whois_info": whois_result.get("whois_info", {}),
-                "ssl_certificate": ssl_result.get("ssl_certificate", {}),
-                "description": "Combined DNS, WHOIS, and SSL certificate information."
-            }
-        else:
-            result = {"error": "Invalid input type"}
-
-        return jsonify(result)
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
