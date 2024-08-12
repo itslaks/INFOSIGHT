@@ -3,90 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Scanner</title>
+    <title>EnScan - Advanced Cyber Intelligence Tool</title>
     <style>
+        :root {
+            --primary: #00ffff;
+            --secondary: #ff00ff;
+            --dark: #0d1117;
+            --light: #c9d1d9;
+            --accent: #58a6ff;
+        }
         body {
-            background-color: #f4f4f9;
-            font-family: Arial, sans-serif;
-            color: #333;
+            background-color: var(--dark);
+            font-family: 'Roboto', sans-serif;
+            color: var(--light);
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            min-height: 100vh;
         }
         .container {
-            width: 90%;
-            max-width: 800px;
-            margin: 2rem auto;
-            background-color: #fff;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(22, 27, 34, 0.8);
             padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2), 0 0 50px rgba(255, 0, 255, 0.2);
+            backdrop-filter: blur(10px);
         }
         h1 {
-            font-size: 1.8rem;
-            color: #4A90E2;
+            font-size: 3rem;
+            color: var(--primary);
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         .search-container {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         .search-container input {
-            width: 80%;
-            padding: 0.8rem;
-            font-size: 1rem;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            margin-right: 1rem;
+            width: 75%;
+            padding: 1rem;
+            font-size: 1.2rem;
+            background-color: rgba(22, 27, 34, 0.6);
+            border: 2px solid var(--secondary);
+            border-radius: 5px;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        .search-container input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
         }
         button {
-            padding: 0.8rem 1.5rem;
-            background-color: #4A90E2;
-            color: white;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: var(--dark);
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            font-weight: bold;
         }
         button:hover {
-            background-color: #357ABD;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4), 0 5px 15px rgba(255, 0, 255, 0.4);
         }
         #result-container {
             display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-top: 1rem;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
         #result, #definition {
-            flex: 1;
-            padding: 1rem;
-            background-color: #f9f9f9;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            color: #34495e;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            background-color: rgba(22, 27, 34, 0.6);
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: var(--light);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), 0 0 20px rgba(255, 0, 255, 0.1);
             overflow: auto;
+            max-height: 500px;
         }
         #definition {
-            font-family: Arial, sans-serif;
-            font-size: 1rem;
-            white-space: normal;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.1rem;
         }
         .loading {
-            color: #999;
+            color: var(--primary);
             text-align: center;
             font-size: 1.2rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        .key {
+            color: var(--primary);
+            font-weight: bold;
+        }
+        .value {
+            color: var(--secondary);
+        }
+        .definition-key {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .definition-value {
+            color: var(--light);
+        }
+        .error {
+            color: #ff6b6b;
+        }
+        .section-title {
+            color: var(--accent);
+            font-size: 1.4rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 0.3rem;
+        }
+        .nested-content {
+            margin-left: 1rem;
+            border-left: 2px solid var(--secondary);
+            padding-left: 0.5rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>EnScan - Enhanced Scanner</h1>
+        <h1>EnScan - Advanced Cyber Intelligence Tool</h1>
         <div class="search-container">
             <input type="text" id="input" placeholder="Enter email, URL, or domain">
-            <button onclick="scan()">Scan</button>
+            <button onclick="scan()">Analyze</button>
         </div>
         <div id="result-container">
             <div id="result"></div>
@@ -101,53 +153,87 @@
             const definitionDiv = document.getElementById('definition');
             
             if (!query) {
-                resultDiv.textContent = 'Please enter a valid input.';
+                resultDiv.innerHTML = '<span class="error">Please enter a valid input.</span>';
                 definitionDiv.innerHTML = '';
                 return;
             }
-
-            resultDiv.innerHTML = '<p class="loading">Scanning... Please wait.</p>';
+        
+            resultDiv.innerHTML = '<p class="loading">Analyzing... Please wait.</p>';
             definitionDiv.innerHTML = '';
-
+        
             try {
-                const response = await fetch('/api/scan', {
+                const response = await fetch('/enscan/api/scan', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ input: query }),
                 });
-
+        
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
-                const result = await response.json();
-                if (result.error) {
-                    resultDiv.textContent = `Error: ${result.error}`;
+        
+                const data = await response.json();
+                if (data.error) {
+                    resultDiv.innerHTML = `<span class="error">Server error: ${data.error}</span>`;
                     definitionDiv.innerHTML = '';
                 } else {
-                    // Display results
-                    const results = result.results || {};
-                    let resultContent = '<strong>Results:</strong><br>';
-                    for (const [key, value] of Object.entries(results)) {
-                        resultContent += `<strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}<br>`;
-                    }
+                    let resultContent = '<div class="section-title">Analysis Results</div>';
+                    resultContent += formatData(data);
                     resultDiv.innerHTML = resultContent;
-
-                    // Display definitions
-                    const definitions = result.definitions || {};
-                    let definitionContent = '<strong>Definitions:</strong><br>';
+        
+                    // Display simplified definitions
+                    const definitions = simplifyDefinitions(data.definitions || {});
+                    let definitionContent = '<div class="section-title">Explanations</div>';
                     for (const [key, value] of Object.entries(definitions)) {
-                        definitionContent += `<strong>${key}:</strong> ${value}<br>`;
+                        definitionContent += `<span class="definition-key">${key}:</span> <span class="definition-value">${value}</span><br><br>`;
                     }
                     definitionDiv.innerHTML = definitionContent;
                 }
-
+        
             } catch (error) {
-                resultDiv.textContent = `Error: ${error.message}`;
+                console.error('Error:', error);
+                resultDiv.innerHTML = `<span class="error">An error occurred during analysis: ${error.message}</span>`;
                 definitionDiv.innerHTML = '';
             }
+        }
+
+        function formatData(data) {
+            let result = '';
+            for (const [key, value] of Object.entries(data)) {
+                if (key === 'definitions') continue; // Skip definitions, they're handled separately
+                if (typeof value === 'object' && value !== null) {
+                    result += `<div class="section-title">${key}</div>`;
+                    result += `<div class="nested-content">`;
+                    result += formatData(value);
+                    result += `</div>`;
+                } else {
+                    result += `<span class="key">${key}:</span> <span class="value">${value}</span><br>`;
+                }
+            }
+            return result;
+        }
+
+        function simplifyDefinitions(definitions) {
+            const simplifiedDefs = {
+                "A": "The regular internet address of the website. It's like a phone number for computers.",
+                "AAAA": "A newer type of internet address. It's like an upgraded phone number that allows more devices to connect.",
+                "CNAME": "A nickname for a website. It's like having a stage name that points to your real name.",
+                "MX": "The mail server for the domain. It's like the post office for the website's emails.",
+                "NS": "The name servers for the domain. They're like the phone book that tells other computers where to find the website.",
+                "PTR": "Reverse lookup record. It's like caller ID for internet addresses.",
+                "SOA": "Start of Authority record. It's like the birth certificate of the domain, containing key information.",
+                "TXT": "Text record. It's like a notepad where the domain owner can leave public notes or instructions.",
+                "Registrar": "The company that registered the domain name. They're like the real estate agent for internet addresses.",
+                "Creation Date": "When the domain was first registered. It's the birthday of the website's address.",
+                "Expiration Date": "When the domain registration will expire. It's like the renewal date for the website's address lease."
+            };
+
+            // Only include definitions that are present in the original data
+            return Object.fromEntries(
+                Object.entries(simplifiedDefs).filter(([key]) => key in definitions)
+            );
         }
     </script>
 </body>

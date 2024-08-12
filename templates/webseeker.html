@@ -241,7 +241,7 @@
                 'service_version_scan': '-sV',
                 'os_detection_scan': '-O'
             };
-        
+    
             const scanTypesContainer = document.getElementById('scan-types-container');
             for (const [key, value] of Object.entries(scanTypes)) {
                 const div = document.createElement('div');
@@ -252,60 +252,62 @@
                 `;
                 scanTypesContainer.appendChild(div);
             }
-        
+    
             document.getElementById('next-step1').addEventListener('click', (event) => {
                 event.preventDefault();
                 document.getElementById('step1').classList.remove('active');
                 document.getElementById('step2').classList.add('active');
             });
-        
+    
             document.getElementById('start-scan').addEventListener('click', async () => {
                 const url = document.getElementById('website').value;
                 const selectedScanTypes = Array.from(document.querySelectorAll('input[name="scanType"]:checked')).map(cb => cb.value);
-        
+    
                 if (!url || selectedScanTypes.length === 0) {
                     document.getElementById('error').innerText = 'Please enter a website URL or domain and select at least one scan type.';
                     return;
                 }
-        
+    
                 document.getElementById('loading').style.display = 'block';
                 document.getElementById('error').innerText = '';
-        
+    
                 try {
                     const response = await fetch(`/webseeker/start_scan?url=${encodeURIComponent(url)}&scans=${encodeURIComponent(selectedScanTypes.join(','))}`);
                     if (!response.ok) {
                         throw new Error('Network response was not ok.');
                     }
                     const result = await response.json();
-        
+    
                     // Display VirusTotal results
-                    const vtResults = result.virustotal;
+                    const vtResults = result.virustotal || {};
+                    const positives = vtResults.positives || [];
+                    const sources = vtResults.sources || [];
+    
                     document.getElementById('virustotal-results').innerHTML = `
-                        <h3>VirusTotal Results:</h3>
-                        <p>Malicious: ${vtResults.malicious}</p>
-                        <p>Suspicious: ${vtResults.suspicious}</p>
-                        <p>Harmless: ${vtResults.harmless}</p>
-                        <p>Undetected: ${vtResults.undetected}</p>
+                        <p><span class="result-key">Malicious:</span> <span class="result-value">${vtResults.malicious || 'N/A'}</span></p>
+                        <p><span class="result-key">Suspicious:</span> <span class="result-value">${vtResults.suspicious || 'N/A'}</span></p>
+                        <p><span class="result-key">Harmless:</span> <span class="result-value">${vtResults.harmless || 'N/A'}</span></p>
+                        <p><span class="result-key">Undetected:</span> <span class="result-value">${vtResults.undetected || 'N/A'}</span></p>
                         <h4>Positive Detections:</h4>
-                        <ul>${vtResults.positives.map(p => `<li>${p}</li>`).join('')}</ul>
+                        <ul>${positives.map(p => `<li>${p}</li>`).join('')}</ul>
+                        <h4>Sources:</h4>
+                        <ul>${sources.map(s => `<li>${s}</li>`).join('')}</ul>
                     `;
-        
+    
                     // Display NSLOOKUP results
                     const nsResults = result.nslookup;
                     document.getElementById('nslookup-results').innerHTML = `
-                        <h3>NSLOOKUP Results:</h3>
                         <pre>${JSON.stringify(nsResults, null, 2)}</pre>
                     `;
-        
+    
                     // Display Nmap results
                     const nmapResults = result.nmap;
                     document.getElementById('nmap-results').innerHTML = `
-                        <h3>Nmap Results:</h3>
-                        <pre>${nmapResults.result || nmapResults.error}</pre>
+                        <pre>${nmapResults.result || nmapResults.error || 'N/A'}</pre>
                     `;
-        
+    
                     document.getElementById('loading').style.display = 'none';
-        
+    
                     document.getElementById('step2').classList.remove('active');
                     document.getElementById('results').classList.add('active');
                 } catch (error) {
@@ -314,6 +316,7 @@
                 }
             });
         });
-        </script>
+    </script>
+    
 </body>
 </html>

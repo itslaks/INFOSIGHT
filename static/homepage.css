@@ -59,6 +59,7 @@
     &:nth-child(7) { left: calc(50% + 880px); opacity: 0; }
     &:nth-child(8) { left: calc(50% + 1100px); opacity: 0; }
     &:nth-child(9) { left: calc(50% + 1320px); opacity: 0; }
+    &:nth-child(10) { left: calc(50% + 1540px); opacity: 0; }
 
   
   }

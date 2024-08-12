@@ -10,6 +10,7 @@ from webseeker import webseeker
 from filescanner import filescanner
 from infosight_ai import infosight_ai
 from snapspeak_ai import snapspeak_ai
+from enscan import enscan
 
 # Initialize Flask app
 app = Flask(__name__, template_folder='static')
@@ -26,6 +27,7 @@ app.register_blueprint(webseeker, url_prefix='/webseeker')
 app.register_blueprint(filescanner, url_prefix='/filescanner')
 app.register_blueprint(infosight_ai, url_prefix='/infosight_ai')
 app.register_blueprint(snapspeak_ai, url_prefix='/snapspeak_ai')
+app.register_blueprint(enscan, url_prefix='/enscan')
 
 @app.route('/')
 def login():

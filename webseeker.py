@@ -56,6 +56,7 @@ def start_scan():
         return jsonify({'error': 'At least one scan type is required'}), 400
 
     results = {}
+    ip_address = None
 
     # VirusTotal scan
     virustotal_results = scan_with_virustotal(url)

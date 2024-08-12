@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> SNAPSPEAK_AI </title>
+    <title>SNAPSPEAK_AI - Image Analysis Tool</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
         :root {
             --primary-color: #ff6600;
+            --secondary-color: #4a90e2;
             --bg-color: #1a1a1a;
             --text-color: #f0f0f0;
             --accent-color: #2c2c2c;
+            --card-bg: #333333;
         }
         body, html {
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             min-height: 100vh;
@@ -28,7 +30,7 @@
             display: flex;
             flex-direction: column;
             padding: 2rem;
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
@@ -36,54 +38,63 @@
         header {
             text-align: center;
             margin-bottom: 2rem;
+            position: relative;
         }
         h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             color: var(--primary-color);
             margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--primary-color), 0 0 20px var(--primary-color);
+            }
+            to {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px var(--primary-color), 0 0 40px var(--primary-color);
+            }
+        }
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            margin-top: 0.5rem;
+            font-style: italic;
         }
         .upload-section {
             background-color: var(--accent-color);
-            border-radius: 8px;
+            border-radius: 15px;
             padding: 2rem;
             margin-bottom: 2rem;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .custom-file-upload {
+        .custom-file-upload, #analyzeBtn {
             background-color: var(--primary-color);
             color: var(--bg-color);
             padding: 0.75rem 1.5rem;
-            border-radius: 4px;
+            border-radius: 25px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .custom-file-upload:hover {
+        .custom-file-upload:hover, #analyzeBtn:hover {
             background-color: #ff8533;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255,102,0,0.3);
         }
         #imageInput {
             display: none;
-        }
-        #generateBtn {
-            background-color: var(--primary-color);
-            color: var(--bg-color);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        #generateBtn:hover {
-            background-color: #ff8533;
         }
         .content-area {
             display: flex;
@@ -93,12 +104,18 @@
         }
         .image-preview {
             background-color: var(--accent-color);
-            border-radius: 8px;
+            border-radius: 15px;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 300px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .image-preview:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(255,102,0,0.2);
         }
         .image-preview img {
             max-width: 100%;
@@ -110,37 +127,70 @@
             text-align: center;
             margin-top: 1rem;
             background-color: var(--accent-color);
-            border-radius: 8px;
-            padding: 1.5rem;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .loading-bar {
-            height: 4px;
+            height: 6px;
             background-color: var(--primary-color);
             width: 0%;
             transition: width 0.5s ease;
+            border-radius: 3px;
         }
         .loading-text {
-            margin-top: 0.5rem;
-            font-size: 1rem;
+            margin-top: 1rem;
+            font-size: 1.2rem;
             color: var(--primary-color);
+            font-weight: bold;
         }
-        .description-section {
+        .results-section {
             background-color: var(--accent-color);
-            border-radius: 8px;
-            padding: 1.5rem;
+            border-radius: 15px;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
+            gap: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .description {
-            font-size: 2rem;
+        .result-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .result-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(255,102,0,0.2);
+        }
+        .result-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        .result-title {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            font-weight: bold;
+        }
+        .result-content {
+            font-size: 1.1rem;
             line-height: 1.6;
-            margin-bottom: 1rem;
-            flex: 1;
-            overflow-y: auto;
         }
-        .process {
-            font-size: 1rem;
-            color: #a0a0a0;
+        .result-description {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 0.5rem;
+            font-style: italic;
+            border-top: 1px solid #444;
+            padding-top: 0.5rem;
         }
         .background-animation {
             position: fixed;
@@ -158,7 +208,7 @@
             animation: particleAnimation 15s infinite ease-in-out;
         }
         @keyframes particleAnimation {
-            0% {
+            0%, 100% {
                 transform: translate(0, 0) scale(1);
                 opacity: 0;
             }
@@ -171,10 +221,6 @@
             75% {
                 opacity: 1;
             }
-            100% {
-                transform: translate(0, 0) scale(1);
-                opacity: 0;
-            }
         }
     </style>
 </head>
@@ -182,27 +228,25 @@
     <div class="background-animation" id="backgroundAnimation"></div>
     <div class="container">
         <header>
-            <h1> SNAPSPEAK_AI </h1>
+            <h1>SNAPSPEAK_AI</h1>
+            <p class="tagline">Uncover the hidden stories in your images</p>
         </header>
         <div class="upload-section">
             <label for="imageInput" class="custom-file-upload">
                 <i class="fas fa-upload"></i> Choose Image
             </label>
             <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
-            <button id="generateBtn" onclick="generateDescription()">
-                <i class="fas fa-magic"></i> Generate Description
+            <button id="analyzeBtn" onclick="analyzeImage()">
+                <i class="fas fa-search"></i> Analyze Image
             </button>
         </div>
         <div class="content-area">
             <div class="image-preview" id="imagePreview"></div>
             <div class="loading">
                 <div class="loading-bar" id="loadingBar"></div>
-                <p class="loading-text" id="loadingText"></p>
+                <p class="loading-text" id="loadingText">Initializing analysis...</p>
             </div>
-            <div class="description-section">
-                <div class="description" id="description"></div>
-                <div class="process" id="process"></div>
-            </div>
+            <div class="results-section" id="resultsSection"></div>
         </div>
     </div>
     <script>
@@ -218,10 +262,9 @@
             }
         }
         
-        async function generateDescription() {
+        async function analyzeImage() {
             const fileInput = document.getElementById('imageInput');
-            const descriptionDiv = document.getElementById('description');
-            const processDiv = document.getElementById('process');
+            const resultsSection = document.getElementById('resultsSection');
             const loadingDiv = document.querySelector('.loading');
             const loadingBar = document.getElementById('loadingBar');
             const loadingText = document.getElementById('loadingText');
@@ -234,31 +277,26 @@
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
         
-            descriptionDiv.innerText = "";
-            processDiv.innerText = "";
+            resultsSection.innerHTML = "";
             loadingDiv.style.display = "block";
         
             const loadingMessages = [
                 "Analyzing image composition...",
-                "Identifying key elements...",
-                "Processing color patterns...",
-                "Interpreting visual context...",
-                "Generating semantic description...",
-                "Refining output...",
+                "Detecting hidden information...",
+                "Extracting metadata...",
+                "Generating unique image fingerprint...",
+                "Compiling comprehensive results...",
             ];
         
             let progress = 0;
             const interval = setInterval(() => {
-                progress += 3.33;
-                loadingBar.style.width = `${Math.min(progress, 100)}%`;
-                loadingText.innerText = loadingMessages[Math.floor(progress / 20)];
-                if (progress >= 100) {
-                    clearInterval(interval);
-                }
-            }, 1000);
+                progress += 1;
+                loadingBar.style.width = `${Math.min(progress, 95)}%`;
+                loadingText.innerText = loadingMessages[Math.floor(progress / 20) % loadingMessages.length];
+            }, 50);
         
             try {
-                const response = await fetch('/snapspeak_ai/api/predict/', {
+                const response = await fetch('/snapspeak_ai/api/analyze/', {
                     method: 'POST',
                     body: formData
                 });
@@ -270,26 +308,73 @@
                 const result = await response.json();
         
                 clearInterval(interval);
-                loadingDiv.style.display = "none";
-        
-                if (result.data && result.data.length > 0) {
-                    const emojis = ["🖼️", "📸", "🎨", "👀", "💡"];
-                    const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-                    descriptionDiv.innerHTML = `<p>${emoji} ${result.data[0]}</p>`;
-                    if (result.time) {
-                        processDiv.innerText = `⏱️ Time taken: ${result.time.toFixed(2)}s`;
-                    }
-                } else {
-                    descriptionDiv.innerText = "No description generated.";
-                }
+                loadingBar.style.width = '100%';
+                loadingText.innerText = "Analysis complete!";
+                
+                setTimeout(() => {
+                    loadingDiv.style.display = "none";
+                    displayResults(result);
+                }, 500);
             } catch (error) {
                 clearInterval(interval);
                 loadingDiv.style.display = "none";
-                descriptionDiv.innerText = "An error occurred: " + error.message;
+                resultsSection.innerHTML = `<div class="result-item"><div class="result-title">Error</div><div class="result-content">${error.message}</div></div>`;
                 console.error('Error:', error);
             }
         }
-</script>
-    
-</body> 
+
+        function displayResults(result) {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.innerHTML = "";
+
+            addResultItem(resultsSection, "Image Caption", result.caption, "A brief description of what's in the image, generated by AI.");
+
+            addResultItem(resultsSection, "Steganography Detection", `
+                <p><strong>Detected:</strong> ${result.steganography.detected ? 'Yes' : 'No'}</p>
+                <p><strong>Confidence:</strong> ${result.steganography.confidence.toFixed(2)}%</p>
+                <p><strong>Methods:</strong> ${result.steganography.methods.join(", ") || 'None detected'}</p>
+            `, "Checking if the image has hidden messages or data embedded within it.");
+
+            addResultItem(resultsSection, "Metadata", formatMetadata(result.metadata), "Extra information stored within the image file, like camera settings or location.");
+
+            addResultItem(resultsSection, "Image Hash", `<code>${result.image_hash}</code>`, "A unique 'fingerprint' for this image, useful for identifying similar or identical images.");
+
+            addResultItem(resultsSection, "Processing Time", `${result.processing_time.toFixed(2)} seconds`, "How long it took our AI to analyze your image.");
+        }
+
+        function addResultItem(parent, title, content, description) {
+            const item = document.createElement("div");
+            item.className = "result-item";
+            item.innerHTML = `
+                <div class="result-title">${title}</div>
+                <div class="result-content">${content}</div>
+                <div class="result-description">${description}</div>
+            `;
+            parent.appendChild(item);
+        }
+
+        function formatMetadata(metadata) {
+            if (Object.keys(metadata).length === 0) {
+                return "No metadata found.";
+            }
+            return Object.entries(metadata)
+                .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
+                .join("");
+        }
+
+        // Background animation
+        const backgroundAnimation = document.getElementById('backgroundAnimation');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = `${Math.random() * 5 + 1}px`;
+            particle.style.height = particle.style.width;
+            particle.style.left = `${Math.random() * 100}vw`;
+            particle.style.top = `${Math.random() * 100}vh`;
+            particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            backgroundAnimation.appendChild(particle);
+        }
+    </script>
+</body>
 </html>
