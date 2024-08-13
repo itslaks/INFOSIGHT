@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> FILEFENDER </title>
+    <title>FILEFENDER</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         body {
@@ -89,11 +89,11 @@
             font-size: 1.2rem;
             color: rgb(1, 235, 252);
         }
-        button {
+        .scan-button {
             position: relative;
             border: none;
             background-color: transparent;
-            color: #212121;
+            color: rgb(1, 235, 252);
             padding: 20px 40px;
             display: flex;
             align-items: center;
@@ -103,16 +103,18 @@
             gap: 10px;
             border-radius: 10px;
             transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 20px rgb(1, 235, 252);
             cursor: pointer;
             overflow: hidden;
             margin-top: 20px;
+            width: 100%;
+            max-width: 300px;
         }
-        button span {
+        .scan-button span {
             position: relative;
             z-index: 1;
         }
-        button::before {
+        .scan-button::before {
             content: "";
             position: absolute;
             background-color: rgb(1, 235, 252);
@@ -124,16 +126,19 @@
             border-radius: inherit;
             transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
         }
-        button:hover::before {
+        .scan-button:hover::before {
             transform: translate(0%, 0%);
         }
-        button svg {
+        .scan-button svg {
             fill: rgb(1, 235, 252);
             transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
         }
-        button:hover svg {
+        .scan-button:hover svg {
             fill: #000000;
             scale: 1.2;
+        }
+        .scan-button:hover span {
+            color: #000000;
         }
         #result {
             margin-top: 40px;
@@ -160,6 +165,14 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .risk-score {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .risk-low { color: #00ff00; }
+        .risk-medium { color: #ffff00; }
+        .risk-high { color: #ff0000; }
     </style>
 </head>
 <body>
@@ -178,7 +191,7 @@
                 </div>
                 <div id="file-name"></div>
             </div>
-            <button type="submit">
+            <button type="submit" class="scan-button">
                 <span>
                     <svg viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M9.145 18.29c-5.042 0-9.145-4.102-9.145-9.145s4.103-9.145 9.145-9.145 9.145 4.103 9.145 9.145-4.102 9.145-9.145 9.145zm0-15.167c-3.321 0-6.022 2.702-6.022 6.022s2.702 6.022 6.022 6.022 6.023-2.702 6.023-6.022-2.702-6.022-6.023-6.022zm9.263 12.443c-.817 1.176-1.852 2.188-3.046 2.981l5.452 5.453 3.014-3.013-5.42-5.421z"></path></svg>
                     INITIATE SCAN
@@ -210,7 +223,7 @@
                 $('#loader').show();
                 
                 $.ajax({
-                    url: '/filescanner/upload',
+                    url: '/filescanner/upload',  // Update this line
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -219,34 +232,39 @@
                         $('#loader').hide();
                         displayResult(data);
                     },
-                    error: function(error) {
+                    error: function(jqXHR, textStatus, errorThrown) {
                         $('#loader').hide();
-                        $('#result').html('<div style="color: red;">Error: ' + error.responseJSON.error + '</div>');
+                        $('#result').html('<div style="color: red;">Error: ' + (jqXHR.responseJSON ? jqXHR.responseJSON.error : 'Unknown error occurred') + '</div>');
                     }
                 });
             });
 
             function displayResult(data) {
-                let output = "SCAN RESULTS:\n\n";
-                if (data.data && data.data.attributes) {
-                    const attrs = data.data.attributes;
-                    output += `Stats:\n`;
-                    output += `  Harmless: ${attrs.stats.harmless}\n`;
-                    output += `  Malicious: ${attrs.stats.malicious}\n`;
-                    output += `  Suspicious: ${attrs.stats.suspicious}\n`;
-                    output += `  Undetected: ${attrs.stats.undetected}\n\n`;
+                let output = "<h3>Scan Results:</h3>";
+                if (data.error) {
+                    output += `<p style="color: red;">Error: ${data.error}</p>`;
+                } else if (data.risk_score !== undefined) {
+                    let riskClass = data.risk_score < 33 ? 'risk-low' : (data.risk_score < 66 ? 'risk-medium' : 'risk-high');
+                    output += `<div class="risk-score ${riskClass}">Risk Score: ${data.risk_score.toFixed(2)}%</div>`;
+                    output += `<p>Total Scans: ${data.total_scans}</p>`;
+                    output += `<p>Malicious: ${data.malicious}</p>`;
+                    output += `<p>Suspicious: ${data.suspicious}</p>`;
                     
-                    output += `Detailed Results:\n`;
-                    for (const [engine, result] of Object.entries(attrs.results)) {
-                        output += `  ${engine}: ${result.category}\n`;
-                        if (result.result) {
-                            output += `    - ${result.result}\n`;
+                    if (data.full_result && data.full_result.data && data.full_result.data.attributes) {
+                        output += "<h4>Detailed Results:</h4>";
+                        const attrs = data.full_result.data.attributes;
+                        for (const [engine, result] of Object.entries(attrs.results)) {
+                            output += `<p><strong>${engine}:</strong> ${result.category}`;
+                            if (result.result) {
+                                output += ` - ${result.result}`;
+                            }
+                            output += "</p>";
                         }
                     }
                 } else {
-                    output += "No detailed results available.";
+                    output += "<p>No scan results available.</p>";
                 }
-                $('#result').text(output);
+                $('#result').html(output);
             }
         });
     </script>
