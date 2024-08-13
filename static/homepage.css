@@ -541,6 +541,45 @@
       transition: box-shadow 0.2s ease-in;
     }
   }
+  #EN{
+    background-color: transparent;
+  }
+
+  #EN:hover{
+    background:rgb(91, 53, 128);
+    box-shadow: 0 0 30px 5px rgb(169, 146, 192);
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+  }
+  #EN::before{
+    content: '';
+    display: block;
+    width: 0px;
+    height: 86%;
+    position: absolute;
+    top: 7%;
+    left: 0%;
+    opacity: 0;
+    background: #fff;
+    box-shadow: 0 0 50px 30px #fff;
+    -webkit-transform: skewX(-20deg);
+    -moz-transform: skewX(-20deg);
+    -ms-transform: skewX(-20deg);
+    -o-transform: skewX(-20deg);
+    transform: skewX(-20deg);
+  }
+  #EN:hover::before {
+    -webkit-animation: sh02 0.5s 0s linear;
+    -moz-animation: sh02 0.5s 0s linear;
+    animation: sh02 0.5s 0s linear;
+  }
+  #EN:active {
+    box-shadow: 0 0 0 0 transparent;
+    -webkit-transition: box-shadow 0.2s ease-in;
+    -moz-transition: box-shadow 0.2s ease-in;
+    transition: box-shadow 0.2s ease-in;
+  }
   
   .item:nth-of-type(2) .content {
     display: block;
@@ -577,11 +616,11 @@
   
       &:hover {
         background-color: rgba(255,255,255,0.3);
-      }
-    }
-  }
+      }
+    }
+  }
   
-  @media (width > 650px) and (width < 900px) {
+  @media (width > 900px) and (width < 900px) {
     .content {
       & .title        { font-size: 1rem; }
       & .description  { font-size: 0.7rem; }

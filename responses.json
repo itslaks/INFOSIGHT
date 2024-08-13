@@ -9,6 +9,9 @@
       "answer": "Penetration testing (pen testing) simulates cyber attacks to evaluate the security of systems, networks, and applications."
   },
   {
+    "question": "Most Used Nmap Commands.",
+    "answer": "nmap -sS, nmap -sT, nmap -sU, nmap -sA, nmap -sV, nmap -O, nmap -p, nmap -p-, nmap -PN, nmap -F, nmap -T, nmap --script, nmap --top-ports, nmap -oN, nmap -oX"},
+  {
       "question": "What are the phases of a typical penetration testing engagement?",
       "answer": "Phases include reconnaissance, scanning, gaining access, maintaining access, and covering tracks."
   },
@@ -34457,7 +34460,112 @@
                                                   {
                                                       "question": "How do you configure Creepy to handle data from multiple social media platforms with different rate limits?",
                                                       "answer": "Use 'creepy -platforms-rate-limit <platforms-rate-limits>' to configure Creepy to handle data from multiple platforms with different rate limits."
-                                                  }
+                                                  },
+                                                  {
+                                                    "question": "What are the top 6 `nmap` commands?",
+                                                    "answer": {
+                                                        "SYN Scan": {
+                                                            "command": "nmap -sS <IP-Address>",
+                                                            "description": "Performs a SYN scan, which is the most popular scan option as it is both fast and stealthy."
+                                                        },
+                                                        "TCP Connect Scan": {
+                                                            "command": "nmap -sT <IP-Address>",
+                                                            "description": "Performs a TCP connect scan, useful when SYN scan isn't available due to lack of privileges."
+                                                        },
+                                                        "UDP Scan": {
+                                                            "command": "nmap -sU <IP-Address>",
+                                                            "description": "Scans for open UDP ports, which are typically harder to scan than TCP ports."
+                                                        },
+                                                        "Service Version Detection": {
+                                                            "command": "nmap -sV <IP-Address>",
+                                                            "description": "Detects versions of the services running on open ports."
+                                                        },
+                                                        "OS Detection": {
+                                                            "command": "nmap -O <IP-Address>",
+                                                            "description": "Attempts to determine the operating system of the target machine."
+                                                        },
+                                                        "Aggressive Scan": {
+                                                            "command": "nmap -A <IP-Address>",
+                                                            "description": "Enables OS detection, version detection, script scanning, and traceroute in a single scan."
+                                                        }
+                                                    }
+                                                },
+                                                
+                                                {
+                                                  "question": "How do you scan for open ports with `nmap`?",
+                                                  "answer": "Use the command `nmap -p <Port-Range> <IP-Address>` to scan for open ports within a specific range."
+                                              },
+                                              {
+                                                "question": "How do you scan a range of IP addresses with `nmap`?",
+                                                "answer": "Use the command `nmap <Starting-IP-Address>-<Ending-IP-Address>` to scan a range of IP addresses."
+                                            },
+                                            {
+                                              "question": "How do you scan a single IP address with `nmap`?",
+                                              "answer": "Use the command `nmap <IP-Address>` to scan a single IP address."
+                                          },
+                                          {
+                                            "Most Used Metasploit Commands": [
+                                              "search",
+                                              "use",
+                                              "info",
+                                              "show options",
+                                              "set",
+                                              "setg",
+                                              "exploit",
+                                              "run",
+                                              "sessions -l",
+                                              "sessions -i",
+                                              "back",
+                                              "check",
+                                              "show payloads",
+                                              "show exploits",
+                                              "db_status"
+                                            ]
+                                          },
+                                          {
+                                            "Metasploit Commands": [
+                                              "help",
+                                              "exit",
+                                              "version",
+                                              "search",
+                                              "info",
+                                              "use",
+                                              "back",
+                                              "check",
+                                              "show options",
+                                              "show targets",
+                                              "show payloads",
+                                              "show exploits",
+                                              "show auxiliary",
+                                              "show encoders",
+                                              "show nops",
+                                              "set",
+                                              "unset",
+                                              "setg",
+                                              "unsetg",
+                                              "exploit",
+                                              "run",
+                                              "sessions -l",
+                                              "sessions -i",
+                                              "jobs",
+                                              "kill",
+                                              "save",
+                                              "db_connect",
+                                              "db_disconnect",
+                                              "db_status",
+                                              "db_import",
+                                              "db_export",
+                                              "db_nmap"
+                                            ]
+                                          }
+                                          
+                                          
+
+                                          
+                                                                                  
+                                            
+                                              
+                                                
                                                 ]
 
 

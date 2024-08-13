@@ -43,6 +43,17 @@
             padding: 20px;
         }
 
+        .terminal-output {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
         h1 {
             color: #FF00FF;
             text-align: center;
@@ -266,17 +277,24 @@
             function sendMessage() {
                 var userInput = $('#userInput').val();
                 if (userInput.trim() === '') return;
-
+        
                 $('#chatbox').append('<div class="message user-message"><strong>You:</strong> ' + userInput + '</div>');
                 $('#userInput').val('');
-
+        
                 $.ajax({
                     url: '/cybersentry_ai/ask',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({ question: userInput }),
                     success: function(response) {
-                        $('#chatbox').append('<div class="message ai-message"><strong>CyberSentry_AI:</strong><br>' + formatResponse(response.answer) + '</div>');
+                        var aiResponse = '<div class="message ai-message"><strong>CyberSentry_AI:</strong><br>' + formatResponse(response.answer) + '</div>';
+                        
+                        // Add terminal output if available
+                        if (response.terminal_output && response.terminal_output.trim() !== '') {
+                            aiResponse += '<div class="terminal-output"><strong>Terminal Output:</strong><br><pre>' + response.terminal_output + '</pre></div>';
+                        }
+                        
+                        $('#chatbox').append(aiResponse);
                         scrollToBottom();
                     },
                     error: function(xhr, status, error) {
@@ -285,20 +303,20 @@
                     }
                 });
             }
-
+        
             function scrollToBottom() {
                 $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight);
             }
-
+        
             function formatResponse(text) {
                 return text.replace(/(?:\r\n|\r|\n)/g, '<br>').replace(/(\*\*([^*]+)\*\*)/g, '<strong>$2</strong>').replace(/(\*([^*]+)\*)/g, '<em>$2</em>');
             }
-
+        
             $('#sendButton').click(sendMessage);
             $('#userInput').keypress(function(e) {
                 if (e.which == 13) sendMessage();
             });
-
+        
             $('#userInput').focus();
         });
     </script>
