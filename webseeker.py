@@ -6,6 +6,7 @@ import subprocess
 import time
 import logging
 import shutil
+import threading
 
 # Create the Flask app
 app = Flask(__name__)
@@ -29,7 +30,7 @@ SCAN_TYPES = {
     'intense_scan': '-T4 -A -v',
     'ping_scan': '-sn',
     'quick_scan_plus': '-sV -T4 -O -F --version-light',
-    'regular_scan': '',
+    'regular_scan': '-sS -sV',
     'quick_scan': '-T4 -F',
     'tcp_connect_scan': '-sT',
     'syn_scan': '-sS',
@@ -185,29 +186,37 @@ def run_nmap_scan(ip_address, scan_types):
     if not is_nmap_available():
         return {"error": "Nmap is not available on this system. Please install Nmap and ensure it's in your system PATH."}
 
+    results = {}
+    for scan_type in scan_types:
+        if scan_type in SCAN_TYPES:
+            result = run_single_nmap_scan(ip_address, scan_type)
+            results[scan_type] = result
+
+    return results
+
+def run_single_nmap_scan(ip_address, scan_type):
     try:
         command = ["nmap"]
-
-        for scan_type in scan_types:
-            if scan_type in SCAN_TYPES:
-                command.extend(SCAN_TYPES[scan_type].split())
-
+        command.extend(SCAN_TYPES[scan_type].split())
         command.append(ip_address)
 
         logging.info(f"Running command: {' '.join(command)}")
 
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-        timeout = 6000
-        start_time = time.time()
-        while process.poll() is None:
-            if time.time() - start_time > timeout:
+        def kill_process():
+            if process.poll() is None:
                 process.kill()
-                logging.error(f"Process killed due to timeout for IP: {ip_address}")
-                return {"error": "Nmap scan timed out after 60 seconds"}
-            time.sleep(0.1)
+                logging.error(f"Process killed due to timeout for IP: {ip_address}, scan type: {scan_type}")
+
+        # Set a timer to kill the process after 300 seconds (5 minutes)
+        timer = threading.Timer(300, kill_process)
+        timer.start()
 
         output, error = process.communicate()
+
+        # Cancel the timer if the process completed before timeout
+        timer.cancel()
 
         if process.returncode != 0:
             logging.error(f"Nmap command failed with return code {process.returncode}. Error: {error}")
@@ -218,7 +227,7 @@ def run_nmap_scan(ip_address, scan_types):
             logging.error("No output from nmap command")
             return {"error": "No output from nmap command"}
 
-        logging.info(f"Nmap scan completed successfully for IP: {ip_address}")
+        logging.info(f"Nmap scan completed successfully for IP: {ip_address}, scan type: {scan_type}")
         return {"result": output}
     except subprocess.SubprocessError as e:
         logging.error(f"Subprocess error: {e}")

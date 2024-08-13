@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WEBSEEKER</title>
+    <title>WEBSEEKER - Galactic Web Intelligence</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono&display=swap');
 
@@ -137,12 +137,8 @@
             font-size: 1.3em;
         }
         @keyframes glow {
-            from {
-                text-shadow: 0 0 10px #ffe81f, 0 0 20px #ffe81f;
-            }
-            to {
-                text-shadow: 0 0 20px #ffe81f, 0 0 30px #ffe81f;
-            }
+            from { text-shadow: 0 0 10px #ffe81f, 0 0 20px #ffe81f; }
+            to { text-shadow: 0 0 20px #ffe81f, 0 0 30px #ffe81f; }
         }
         .step {
             display: none;
@@ -182,6 +178,13 @@
             animation: rotate 1s linear infinite;
             margin: 30px auto;
         }
+        #nmap-results pre {
+            white-space: pre;
+            font-family: 'Roboto Mono', monospace;
+            line-height: 1.5;
+            tab-size: 4;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -190,7 +193,7 @@
         <div id="step1" class="step active">
             <div class="form-group">
                 <label for="website">Enter Website URL or Domain:</label>
-                <input type="text" id="website" name="website" required>
+                <input type="text" id="website" name="website" required placeholder="e.g., example.com">
             </div>
             <button id="next-step1">Next</button>
         </div>
@@ -201,7 +204,7 @@
                     <!-- Scan types are dynamically populated here -->
                 </div>
             </div>
-            <button id="start-scan">Start Comprehensive Scan</button>
+            <button id="start-scan">Initiate Galactic Scan</button>
         </div>
         <div id="loading">
             <p>WEBSEEKER Initialized</p>
@@ -212,15 +215,15 @@
         <div id="results" class="step">
             <div class="results-container">
                 <div class="result-column">
-                    <h2>VirusTotal Results</h2>
+                    <h2>VirusTotal Intelligence</h2>
                     <div id="virustotal-results" class="result-box"></div>
                 </div>
                 <div class="result-column">
-                    <h2>NSLOOKUP Results</h2>
+                    <h2>NSLOOKUP Data</h2>
                     <div id="nslookup-results" class="result-box"></div>
                 </div>
                 <div class="result-column">
-                    <h2>Nmap Scan Results</h2>
+                    <h2>Nmap Scan Insights</h2>
                     <div id="nmap-results" class="result-box"></div>
                 </div>
             </div>
@@ -302,9 +305,16 @@
     
                     // Display Nmap results
                     const nmapResults = result.nmap;
-                    document.getElementById('nmap-results').innerHTML = `
-                        <pre>${nmapResults.result || nmapResults.error || 'N/A'}</pre>
-                    `;
+                    let nmapResultsHtml = '<pre>';
+
+                    for (const [scanType, scanResult] of Object.entries(nmapResults)) {
+                        nmapResultsHtml += `<strong>${scanType.toUpperCase()} SCAN:</strong>\n`;
+                        nmapResultsHtml += scanResult.result.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        nmapResultsHtml += '\n\n';
+                    }
+
+                    nmapResultsHtml += '</pre>';
+                    document.getElementById('nmap-results').innerHTML = nmapResultsHtml;
     
                     document.getElementById('loading').style.display = 'none';
     
@@ -317,6 +327,5 @@
             });
         });
     </script>
-    
 </body>
 </html>
