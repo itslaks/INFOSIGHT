@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify, Blueprint,  render_template
+from flask import Flask, request, jsonify, Blueprint, render_template, Response, stream_with_context
 import subprocess
 import time
 import ipaddress
 import traceback
 import logging
+import threading
+import queue
 
 app = Flask(__name__)
 
@@ -58,16 +60,15 @@ def scan():
 
     app.logger.info(f"Received scan request for IP: {ip_address}, Types: {scan_types}")
 
-    results = run_nmap_scan(ip_address, scan_types)
+    def generate():
+        for result in run_nmap_scan(ip_address, scan_types):
+            yield f"data: {result}\n\n"
 
-    if 'error' in results:
-        return jsonify(results), 500
-
-    return jsonify(results)
+    return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
 def run_nmap_scan(ip_address, scan_types):
     try:
-        command = ["nmap"]
+        command = ["nmap", "-v"]  # Add verbose flag for more detailed output
 
         for scan_type in scan_types:
             if scan_type in SCAN_TYPES:
@@ -82,39 +83,52 @@ def run_nmap_scan(ip_address, scan_types):
 
         app.logger.info(f"Running command: {' '.join(command)}")
 
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1, universal_newlines=True)
 
-        timeout = 6000
+        output_queue = queue.Queue()
+        
+        def enqueue_output(out, queue):
+            for line in iter(out.readline, ''):
+                queue.put(line)
+            out.close()
+
+        t = threading.Thread(target=enqueue_output, args=(process.stdout, output_queue))
+        t.daemon = True
+        t.start()
+
+        timeout = 600  # 10 minutes
         start_time = time.time()
-        while process.poll() is None:
-            if time.time() - start_time > timeout:
-                process.kill()
-                app.logger.error(f"Process killed due to timeout for IP: {ip_address}")
-                return {"error": "Nmap scan timed out after 10 minutes"}
-            time.sleep(0.1)
-
-        output, error = process.communicate()
-
-        app.logger.info(f"Nmap output: {output}")
-        app.logger.info(f"Nmap error: {error}")
+        
+        while True:
+            try:
+                line = output_queue.get_nowait()
+                yield app.json.dumps({"progress": line.strip()})
+            except queue.Empty:
+                if process.poll() is not None:
+                    break
+                if time.time() - start_time > timeout:
+                    process.kill()
+                    app.logger.error(f"Process killed due to timeout for IP: {ip_address}")
+                    yield app.json.dumps({"error": "Nmap scan timed out after 10 minutes"})
+                    return
+                time.sleep(0.1)
 
         if process.returncode != 0:
-            app.logger.error(f"Nmap command failed with return code {process.returncode}. Error: {error}")
-            return {"error": f"Nmap command failed with return code {process.returncode}. Error: {error}"}
-        if not output.strip():
-            app.logger.error("No output from nmap command")
-            return {"error": "No output from nmap command"}
+            app.logger.error(f"Nmap command failed with return code {process.returncode}.")
+            yield app.json.dumps({"error": f"Nmap command failed with return code {process.returncode}."})
+        else:
+            yield app.json.dumps({"result": "Scan completed successfully"})
 
-        app.logger.info(f"Nmap scan completed successfully for IP: {ip_address}")
-        return {"result": output}
     except subprocess.SubprocessError as e:
         app.logger.error(f"Subprocess error: {str(e)}")
         app.logger.error(traceback.format_exc())
-        return {"error": f"A subprocess error occurred: {str(e)}"}
+        yield app.json.dumps({"error": f"A subprocess error occurred: {str(e)}"})
     except Exception as e:
         app.logger.error(f"Exception occurred: {str(e)}")
         app.logger.error(traceback.format_exc())
-        return {"error": f"An unexpected error occurred: {str(e)}"}
+        yield app.json.dumps({"error": f"An unexpected error occurred: {str(e)}"})
+
+app.register_blueprint(portscanner, url_prefix='/portscanner')
 
 if __name__ == '__main__':
     app.run(debug=True)

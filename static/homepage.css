@@ -305,6 +305,7 @@
     }
     #LA{
       background-color: transparent;
+      border-color: black;
     }
   
     #LA:hover{
@@ -606,20 +607,28 @@
     user-select: auto;
   
     & .btn {
-      background-color: rgba(255,255,255,0.5);
-      color: rgba(0,0,0,0.7);
-      border: 2px solid rgba(0,0,0,0.6);
+      background-color: rgba(0, 0, 0, 0.562);
+      color: rgb(250, 250, 250);
+      box-shadow: #ff0000;
+      border: 2px solid rgb(255, 0, 0);
       margin: 0 0.25rem;
-      padding: 0.75rem;
+      padding: 0.95rem;
       border-radius: 50%;
+      font-size: 0.95rem;
       cursor: pointer;
   
       &:hover {
-        background-color: rgba(255,255,255,0.3);
-      }
+        background-color: rgb(97, 59, 59);
+        background: rgb(255, 255, 255);
+        color: black;
+        border: 2px solid rgb(25, 0, 255);
+        box-shadow: 0 0 30px 5px rgb(8, 39, 216);
+        -webkit-transition: all 0.2s ease-out;
+        -moz-transition: all 0.2s ease-out;
+        transition: all 0.2s ease-out;
     }
   }
-  
+}
   @media (width > 900px) and (width < 900px) {
     .content {
       & .title        { font-size: 1rem; }

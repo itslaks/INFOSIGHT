@@ -64,6 +64,205 @@
       "answer": "Keylogging captures keystrokes on a compromised system to record passwords, sensitive information, and user activities."
   },
   {
+    "question": "Most Used Metasploit Commands?",
+    "answer": "msfconsole, msfvenom, msfdb, msfupdate, msfconsole -x, msfconsole -r, msfconsole -L, msfconsole -q, msfconsole -e, msfconsole -s, msfconsole -h, msfconsole -d"
+  },
+  {
+    "question": "Most Used Burp Suite Commands?",
+    "answer": "burpsuite, burpsuite --config, burpsuite --project-file, burpsuite --headless, burpsuite --proxy, burpsuite --import, burpsuite --export, burpsuite --no-update, burpsuite --temp-dir, burpsuite --scan"
+  },
+ 
+  {
+    "question": "Most Used Wireshark Commands?",
+    "answer": "wireshark, tshark, dumpcap, wireshark -r, wireshark -w, tshark -i, tshark -r, tshark -w, dumpcap -i, dumpcap -w, dumpcap -r, tshark -f, wireshark --version"
+  },
+  {
+    "question": "Most Used Aircrack-ng Commands?",
+    "answer": "airmon-ng, airodump-ng, aireplay-ng, aircrack-ng, airbase-ng, airdecap-ng, airmon-ng check, airmon-ng start, airmon-ng stop, aireplay-ng -0, aircrack-ng -b, aircrack-ng -w, aircrack-ng -e"
+  },
+  {
+    "question": "Most Used John the Ripper Commands?",
+    "answer": "john, john --wordlist, john --rules, john --format, john --show, john --incremental, john --test, john --session, john --status, john --list=formats"
+  },
+  {
+    "question": "Most Used Hydra Commands?",
+    "answer": "hydra, hydra -l, hydra -P, hydra -u, hydra -s, hydra -t, hydra -vV, hydra -x, hydra -e, hydra -o"
+  },
+ 
+  {
+    "question": "Most Used Nikto Commands?",
+    "answer": "nikto -h, nikto -p, nikto -ssl, nikto -T, nikto -e, nikto -o, nikto -Format, nikto -update, nikto -ask"
+  },
+  {
+    "question": "Most Used sqlmap Commands?",
+    "answer": "sqlmap -u, sqlmap --data, sqlmap -p, sqlmap --cookie, sqlmap --dbs, sqlmap --tables, sqlmap --columns, sqlmap --dump, sqlmap --batch, sqlmap --threads"
+  },
+  {
+    "question": "Most Used Ostinato Commands?",
+    "answer": "ostinato, ostinato-cli, ostinato -h, ostinato -p, ostinato -c, ostinato -f, ostinato -s, ostinato -l, ostinato -d, ostinato -t"
+  },
+  {
+    "question": "Most Used Maltego Commands?",
+    "answer": "maltego, maltego -t, maltego -d, maltego -p, maltego -l, maltego -c, maltego -e, maltego -r, maltego -i, maltego -u"
+  },
+  {
+    "question": "Most Used Medusa Commands?",
+    "answer": "medusa, medusa -h, medusa -u, medusa -P, medusa -L, medusa -p, medusa -t, medusa -e, medusa -s, medusa -O"
+  },
+  {
+    "question": "Most Used Reaver Commands?",
+    "answer": "reaver -i, reaver -b, reaver -c, reaver -s, reaver -p, reaver -a, reaver -t, reaver -d, reaver -l, reaver -e"
+  },
+  {
+    "question": "Most Used Social Engineering Toolkit (SET) Commands?",
+    "answer": "setoolkit, setoolkit -h, setoolkit -p, setoolkit -e, setoolkit -a, setoolkit -o, setoolkit -d, setoolkit -s, setoolkit -c, setoolkit -t"
+  },
+  {
+    "question": "Most Used Empire Commands?",
+    "answer": "empire, empire -h, empire -i, empire -p, empire -l, empire -c, empire -s, empire -t, empire -d, empire -o"
+  },
+  {
+    "question": "Most Used Ettercap Commands?",
+    "answer": "ettercap -h, ettercap -T, ettercap -G, ettercap -M, ettercap -i, ettercap -P, ettercap -L, ettercap -d, ettercap -r, ettercap -c"
+  },
+  {
+    "question": "Most Used Netcat Commands?",
+    "answer": "nc -l, nc -p, nc -v, nc -u, nc -n, nc -z, nc -e, nc -w, nc -c, nc -r"
+  },
+  {
+    "question": "Most Used Enum4linux Commands?",
+    "answer": "enum4linux -u, enum4linux -p, enum4linux -a, enum4linux -d, enum4linux -n, enum4linux -s, enum4linux -r, enum4linux -t, enum4linux -h, enum4linux -l"
+  },
+  {
+    "question": "Most Used Gobuster Commands?",
+    "answer": "gobuster dir -u, gobuster dir -w, gobuster dir -x, gobuster dir -t, gobuster dir -e, gobuster dns -d, gobuster dns -w, gobuster dns -r, gobuster dns -t, gobuster -h"
+  },
+  {
+    "question": "Most Used CrackMapExec Commands?",
+    "answer": "crackmapexec smb -u, crackmapexec smb -p, crackmapexec smb -d, crackmapexec smb -t, crackmapexec smb -x, crackmapexec smb -l, crackmapexec smb -q, crackmapexec smb -a, crackmapexec smb -h, crackmapexec smb -o"
+  },
+  {
+    "question": "Most Used Arachni Commands?",
+    "answer": "arachni --help, arachni --url, arachni --output, arachni --scope, arachni --report, arachni --checks, arachni --plugins, arachni --timeout, arachni --threads, arachni --config"
+  },
+  {
+    "question": "Most Used Wapiti Commands?",
+    "answer": "wapiti -h, wapiti -u, wapiti -p, wapiti -d, wapiti -o, wapiti -t, wapiti -m, wapiti -f, wapiti -e, wapiti -l"
+  },
+  {
+    "question": "Most Used Dirb Commands?",
+    "answer": "dirb [URL], dirb [URL] [wordlist], dirb [URL] [wordlist] -x, dirb [URL] [wordlist] -t, dirb [URL] [wordlist] -r, dirb [URL] [wordlist] -o, dirb [URL] [wordlist] -S, dirb [URL] [wordlist] -u, dirb [URL] [wordlist] -f, dirb [URL] [wordlist] -d"
+  },
+  {
+    "question": "Most Used XSSer Commands?",
+    "answer": "xsser -h, xsser -u, xsser -d, xsser -p, xsser -l, xsser -e, xsser -t, xsser -r, xsser -f, xsser -v"
+  },
+  {
+    "question": "Most Used BeEF Commands?",
+    "answer": "beef -h, beef -p, beef -x, beef -a, beef -t, beef -c, beef -l, beef -v, beef -d, beef -e"
+  },
+  {
+    "question": "Most Used Fimap Commands?",
+    "answer": "fimap -h, fimap -u, fimap -o, fimap -d, fimap -t, fimap -p, fimap -w, fimap -v, fimap -l, fimap -r"
+  },
+  {
+    "question": "Most Used PowerSploit Commands?",
+    "answer": "powersploit -h, powersploit -e, powersploit -a, powersploit -i, powersploit -s, powersploit -u, powersploit -p, powersploit -r, powersploit -c, powersploit -t"
+  },
+  {
+    "question": "Most Used Volatility Commands?",
+    "answer": "volatility -h, volatility -f, volatility --profile, volatility imageinfo, volatility pslist, volatility pstree, volatility dumpfiles, volatility netscan, volatility malfind, volatility yara"
+  },
+  {
+    "question": "Most Used Foremost Commands?",
+    "answer": "foremost -h, foremost -i, foremost -o, foremost -t, foremost -a, foremost -v, foremost -d, foremost -q, foremost -e, foremost -x"
+  },
+  {
+    "question": "Most Used Hping3 Commands?",
+    "answer": "hping3 -h, hping3 -S, hping3 -A, hping3 -F, hping3 -P, hping3 -I, hping3 -p, hping3 -s, hping3 -a, hping3 -c"
+  },
+  {
+    "question": "Most Used ZAP Commands?",
+    "answer": "zap.sh -help, zap.sh -daemon, zap.sh -port, zap.sh -host, zap.sh -config, zap.sh -addoninstall, zap.sh -addonremove, zap.sh -newsession, zap.sh -directory, zap.sh -plugin"
+  },
+  {
+    "question": "Most Used Snort Commands?",
+    "answer": "snort -h, snort -c, snort -i, snort -l, snort -A, snort -u, snort -g, snort -k, snort -T, snort -r"
+  },
+  {
+    "question": "Most Used Ettercap Commands?",
+    "answer": "ettercap -h, ettercap -T, ettercap -G, ettercap -C, ettercap -M, ettercap -i, ettercap -P, ettercap -L, ettercap -M arp:remote, ettercap -Tq"
+  },
+  {
+    "question": "Most Used Radare2 Commands?",
+    "answer": "r2 -h, r2 -a [arch], r2 -b [bits], r2 -i [input_file], r2 -e [entrypoint], r2 -p [plugin], r2 -c [command], r2 -O [option], r2 -d [debugger], r2 -S [script]"
+  },
+  {
+    "question": "Most Used Smbclient Commands?",
+    "answer": "smbclient -L, smbclient -U, smbclient -I, smbclient -W, smbclient -p, smbclient -c, smbclient -m, smbclient -A, smbclient -n, smbclient -l"
+  },
+  {
+    "question": "Most Used John the Ripper Commands?",
+    "answer": "john --help, john --list=formats, john --wordlist, john --incremental, john --rules, john --format, john --show, john --restore, john --test, john --status"
+  },
+  {
+    "question": "Most Used Kismet Commands?",
+    "answer": "kismet -h, kismet -c, kismet -f, kismet -b, kismet -t, kismet -r, kismet -a, kismet -p, kismet -l, kismet -o"
+  },
+  {
+    "question": "Most Used Airbase-ng Commands?",
+    "answer": "airbase-ng -h, airbase-ng -e [SSID], airbase-ng -c [channel], airbase-ng -P [plugin], airbase-ng -I [interface], airbase-ng -a [BSSID], airbase-ng -m [MAC], airbase-ng -p [port], airbase-ng -v [verbose], airbase-ng -r [file]"
+  },
+  {
+    "question": "Most Used PayloadsAllTheThings Commands?",
+    "answer": "payloadsallthethings --help, payloadsallthethings --list, payloadsallthethings --generate, payloadsallthethings --search, payloadsallthethings --info, payloadsallthethings --update"
+  },
+  {
+    "question": "Most Used Responder Commands?",
+    "answer": "responder -h, responder -I [interface], responder -r [file], responder -d [domain], responder -i [IP], responder -s [script], responder -A [address], responder -o [output], responder -l [log], responder -p [plugin]"
+  },
+  {
+    "question": "Most Used Binwalk Commands?",
+    "answer": "binwalk -h, binwalk -e, binwalk -B, binwalk -M, binwalk -D, binwalk -R, binwalk -A, binwalk -O, binwalk -p, binwalk -C"
+  },
+  {
+    "question": "Most Used Sourcetree Commands?",
+    "answer": "sourcetree --help, sourcetree --status, sourcetree --commit, sourcetree --push, sourcetree --pull, sourcetree --branch, sourcetree --merge, sourcetree --rebase, sourcetree --log, sourcetree --checkout"
+  },
+  {
+    "question": "Most Used Nessus Commands?",
+    "answer": "nessus -h, nessus -v, nessus -x, nessus -i, nessus -P, nessus -d, nessus -u, nessus -p, nessus -s, nessus -r"
+  },
+  {
+    "question": "Most Used RAT Commands?",
+    "answer": "rat --help, rat --connect [IP], rat --listen, rat --upload [file], rat --download [file], rat --exec [command], rat --screenshot, rat --keylog, rat --cmd, rat --restart"
+  },
+  {
+    "question": "Most Used TrueCrypt Commands?",
+    "answer": "truecrypt -h, truecrypt -t, truecrypt -c [container], truecrypt -d [device], truecrypt -m [mountpoint], truecrypt -u [user], truecrypt -v [volume], truecrypt -e [encryption], truecrypt -p [password], truecrypt -r [restore]"
+  },
+  {
+    "question": "Most Used Tshark Commands?",
+    "answer": "tshark -h, tshark -i [interface], tshark -f [filter], tshark -r [file], tshark -w [file], tshark -n, tshark -V, tshark -T [type], tshark -e [field], tshark -a [duration]"
+  },
+  {
+    "question": "Most Used Burp Collaborator Commands?",
+    "answer": "burp-collaborator-client -h, burp-collaborator-client -c [command], burp-collaborator-client -t [target], burp-collaborator-client -p [port], burp-collaborator-client -l [log], burp-collaborator-client -e [email], burp-collaborator-client -d [domain], burp-collaborator-client -i [interface], burp-collaborator-client -v [verbose], burp-collaborator-client -u [url]"
+  },
+  {
+    "question": "Most Used Nikto2 Commands?",
+    "answer": "nikto -h [host], nikto -p [port], nikto -T [timeout], nikto -o [output], nikto -e [extensive], nikto -C [config], nikto -u [url], nikto -d [directory], nikto -r [report], nikto -v [verbose]"
+  },
+  {
+    "question": "Most Used Yersinia Commands?",
+    "answer": "yersinia -h, yersinia -i [interface], yersinia -p [plugin], yersinia -d [target], yersinia -s [source], yersinia -t [type], yersinia -v [verbose], yersinia -r [report], yersinia -a [attack], yersinia -l [log]"
+  },
+  {
+    "question": "Most Used Hashcat Commands?",
+    "answer": "hashcat -h, hashcat -m [hash_type], hashcat -a [attack_mode], hashcat -o [output], hashcat -r [rules], hashcat -d [device], hashcat -p [password], hashcat -w [workload], hashcat -t [timeout], hashcat -v [verbose]"
+  },
+
+  {
       "question": "What is ransomware and how does it operate?",
       "answer": "Ransomware encrypts a victim's data and demands payment for decryption, often using untraceable cryptocurrencies."
   },

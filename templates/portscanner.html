@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,36 +22,8 @@
             justify-content: center;
             align-items: center;
         }
-        .loading-screen, .circle-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            color: #00ffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            z-index: 1000;
-            animation: insideOut 1.5s ease-in-out;
-        }
-        @keyframes insideOut {
-            0% {
-                opacity: 0;
-                transform: scale(0);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.2);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
         .container {
-            display: none;
+            display: flex;
             flex-direction: column;
             width: 90vw;
             height: 90vh;
@@ -143,6 +115,7 @@
         #error {
             color: #ff3333;
         }
+
         #results-container {
             flex-grow: 1;
             border: 1px solid #00ffff;
@@ -154,6 +127,8 @@
             line-height: 1.4;
             white-space: pre-wrap;
             word-wrap: break-word;
+            margin-bottom: 200px;
+            font-family: monospace;
         }
         #results-container h3 {
             color: #00ffff;
@@ -166,6 +141,16 @@
             border-radius: 5px;
             overflow-x: auto;
         }
+
+        #progress-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: rgba(0, 255, 255, 0.05);
+        }
+
         .hidden {
             display: none;
         }
@@ -215,12 +200,11 @@
     </style>
 </head>
 <body>
-    <div class="loading-screen" id="loading-screen">Initializing Port Scanner...</div>
     <div class="container" id="container">
         <div class="left-panel">
-            <h1> Port Scanner</h1>
+            <h1>Port Scanner</h1>
             <form id="scan-form">
-                <div id="ip-section" class="hidden">
+                <div id="ip-section">
                     <div class="lightsaber-input ip-input-container">
                         <input type="text" id="ip-address-1" maxlength="3" placeholder="000">
                         <input type="text" id="ip-address-2" maxlength="3" placeholder="000">
@@ -246,28 +230,18 @@
         </div>
         <div class="right-panel">
             <div id="results-container"></div>
+            <div id="progress-container" class="hidden"></div>
         </div>
-    </div>
-    <div class="circle-loading hidden" id="circle-loading">
-        <svg viewBox="0 0 50 50" class="circle">
-            <circle cx="25" cy="25" r="20" fill="none" stroke="#00ffff" stroke-width="5"></circle>
-        </svg>
     </div>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const loadingScreen = document.getElementById('loading-screen');
         const container = document.getElementById('container');
         const ipSection = document.getElementById('ip-section');
         const scanSection = document.getElementById('scan-section');
-        const circleLoading = document.getElementById('circle-loading');
         const resultsContainer = document.getElementById('results-container');
+        const progressContainer = document.getElementById('progress-container');
+        const errorDisplay = document.getElementById('error');
         
-        setTimeout(() => {
-            loadingScreen.style.display = 'none';
-            container.style.display = 'flex';
-            ipSection.classList.remove('hidden');
-        }, 2000);
-    
         document.getElementById('next-button').addEventListener('click', function() {
             const ipParts = [
                 document.getElementById('ip-address-1'),
@@ -278,7 +252,7 @@
             const ipAddress = ipParts.map(part => part.value.trim()).join('.');
     
             if (ipParts.some(part => part.value.trim() === '')) {
-                document.getElementById('error').innerText = 'Please enter a complete IP address';
+                errorDisplay.innerText = 'Please enter a complete IP address';
                 return;
             }
     
@@ -314,49 +288,93 @@
             const scanTypes = Array.from(document.querySelectorAll('input[name="scan_types"]:checked')).map(input => input.value);
     
             if (scanTypes.length === 0) {
-                document.getElementById('error').innerText = 'Please select a scan type';
+                errorDisplay.innerText = 'Please select a scan type';
                 return;
             }
     
             scanSection.classList.add('hidden');
-            circleLoading.classList.remove('hidden');
+            progressContainer.innerHTML = '';
+            progressContainer.classList.remove('hidden');
+            resultsContainer.innerHTML = '';
+            errorDisplay.innerText = '';
     
-            fetch('/portscanner/scan', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    ip_address: ipAddress,
-                    scan_types: scanTypes
+            // Add 2-second delay
+            setTimeout(() => {
+                fetch('/portscanner/scan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ip_address: ipAddress,
+                        scan_types: scanTypes
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                circleLoading.classList.add('hidden');
-                if (data.error) {
-                    document.getElementById('error').innerText = data.error;
-                } else {
-                    // Clear previous results
-                    resultsContainer.innerHTML = '';
-                    
-                    // Iterate through each scan type and its results
-                    for (const [scanType, result] of Object.entries(data)) {
-                        const resultElement = document.createElement('div');
-                        resultElement.innerHTML = `<h3>${scanType}</h3><pre>${result}</pre>`;
-                        resultsContainer.appendChild(resultElement);
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-                    
-                    resultsContainer.classList.add('visible');
-                }
-            })
-            .catch(error => {
-                circleLoading.classList.add('hidden');
-                document.getElementById('error').innerText = 'An error occurred during the scan';
-                console.error('Scan error:', error);
-            });
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+        
+                    function readStream() {
+                        reader.read().then(({ done, value }) => {
+                            if (done) {
+                                return;
+                            }
+                            const chunk = decoder.decode(value, { stream: true });
+                            const lines = chunk.split('\n\n');
+                            lines.forEach(line => {
+                                if (line.startsWith('data: ')) {
+                                    const data = JSON.parse(line.slice(6));
+                                    processServerMessage(data);
+                                }
+                            });
+                            readStream();
+                        });
+                    }
+        
+                    readStream();
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    displayError('An error occurred while initiating the scan');
+                });
+            }, 2000);
         });
+    
+        function processServerMessage(data) {
+            if (data.progress) {
+                updateProgressDisplay(data.progress);
+            } else if (data.result) {
+                displayFinalResult(data.result);
+            } else if (data.error) {
+                displayError(data.error);
+            }
+        }
+    
+        function updateProgressDisplay(progress) {
+            const progressElement = document.createElement('p');
+            progressElement.textContent = progress;
+            progressContainer.appendChild(progressElement);
+            progressContainer.scrollTop = progressContainer.scrollHeight;
+        }
+    
+        function displayFinalResult(result) {
+            resultsContainer.innerHTML = `<pre>${formatNmapOutput(result)}</pre>`;
+            resultsContainer.classList.add('visible');
+        }
+    
+        function displayError(error) {
+            errorDisplay.innerText = error;
+        }
+
+        function formatNmapOutput(result) {
+            // This is a placeholder function. You'll need to implement
+            // the actual formatting based on your result structure.
+            return result.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;');
+        }
     });
-</script>
+    </script>
 </body>
 </html>
