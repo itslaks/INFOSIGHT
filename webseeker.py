@@ -18,7 +18,7 @@ webseeker = Blueprint('webseeker', __name__, template_folder='templates')
 logging.basicConfig(level=logging.INFO)
 
 # VirusTotal configuration
-VIRUSTOTAL_API_KEY = '928bf0c9a4319466230a8b3c95d55c6ec30b76d9a27599d0b2c95133090f9945'
+VIRUSTOTAL_API_KEY = 'd1cd837730b014a8cc8b9aef3ebcb85ab179be6067604ada94dc8fe7b6c25f57'
 VIRUSTOTAL_URL = 'https://www.virustotal.com/api/v3/urls'
 VIRUSTOTAL_ANALYSIS_URL = 'https://www.virustotal.com/api/v3/analyses/'
 
