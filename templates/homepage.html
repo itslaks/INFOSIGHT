@@ -29,6 +29,15 @@
                   </div>
               </div>
           </li>
+          <li class='item' style="background-image: url('static/images/lana_AI.jpg')">
+            <div class='content'>
+                <h1 class='title' style="color: black" >LANA_AI</h1>
+                <p class='description' style= "color: black ">LANA_AI is an intelligent virtual assistant that utilizes generative AI models for natural language processing. It can handle voice and text interactions, providing accurate responses and performing tasks based on user commands. LANA_AI is designed to enhance productivity and user experience.</p>
+                <div class="button" >
+                    <button id="LA" onclick="window.location.href='{{ url_for('lana_ai.index') }}'" style="color:black">LANA_AI</button>
+                </div>
+            </div>
+        </li>
           <li class='item' style="background-image: url('static/images/infocrypt.jpg')">
               <div class='content'>
                   <h1 class='title'>INFOCRYPT</h1>
@@ -38,15 +47,42 @@
                   </div>
               </div>
           </li>
-          <li class='item' style="background-image: url('static/images/lana_AI.jpg')">
-              <div class='content'>
-                  <h1 class='title' style="color: black" >LANA_AI</h1>
-                  <p class='description' style= "color: black ">LANA_AI is an intelligent virtual assistant that utilizes generative AI models for natural language processing. It can handle voice and text interactions, providing accurate responses and performing tasks based on user commands. LANA_AI is designed to enhance productivity and user experience.</p>
-                  <div class="button" >
-                      <button id="LA" onclick="window.location.href='{{ url_for('lana_ai.index') }}'" style="color:black">LANA_AI</button>
-                  </div>
-              </div>
-          </li>
+          <li class='item' style="background-image: url('static/images/filefender.jpg')">
+            <div class='content'>
+                <h1 class='title'>FILE FENDER</h1>
+                <p class='description'>Scan your files for viruses using our service. We check files against multiple popular databases to ensure they are free from threats.</p>
+                <div class="button">
+                    <button  id="FF" onclick="window.location.href='{{ url_for('filescanner.index') }}'">FILE FENDER</button>
+                </div>
+            </div>
+        </li>
+        <li class='item' style="background-image: url('static/images/portscanner.jpeg')">
+            <div class='content'>
+                <h1 class='title'>PORTSCANNER</h1>
+                <p class='description'>Portscanner is a network security tool used to identify open ports on a target system. By scanning for vulnerabilities, it helps in assessing the security posture of networks and devices. Portscanner is essential for penetration testing and network security audits.</p>
+                <div class="button" >
+                    <button id="PS" onclick="window.location.href='{{ url_for('portscanner.index') }}'">PORT SCANNER</button>
+                </div>
+            </div>
+        </li>
+        <li class='item' style="background-image: url('static/images/snapspeak.jpg')">
+            <div class='content'>
+                <h1 class='title'>SNAPSPEAK_AI</h1>
+                <p class='description'> SnapSpeak AI is an advanced image analysis tool designed to generate detailed captions, detect steganography, extract metadata, and create unique image hashes. It offers a user-friendly interface for uploading images and quickly analyzing them.</p>
+                <div class="button" >
+                    <button id="LA" onclick="window.location.href='{{ url_for('snapspeak_ai.index') }}'">SNAPSPEAK_AI</button>
+                </div>
+            </div>
+        </li>
+        <li class='item' style="background-image: url('static/images/cybersentry_AI.jpeg')">
+            <div class='content'>
+                <h1 class='title ' style="color : black;" >CYBERSENTRY_AI</h1>
+                <p class='description' style="color : black;" >CyberSentry_AI is a bot specially made for cybersecurity and also functions as a normal bot. It continuously monitors networks, identifies suspicious activities, and provides real-time alerts to mitigate threats. CyberSentry_AI ensures robust security while also handling regular bot tasks.</p>
+                <div class="button" >
+                    <button id="CS" onclick="window.location.href='{{ url_for('cybersentry_ai.index') }}'">CYBERSENTRY_AI</button>
+                </div>
+            </div>
+        </li>
           <li class='item' style="background-image: url('static/images/tracklist.jpg')">
               <div class='content'>
                   <h1 class='title'>TRACKLYST</h1>
@@ -56,42 +92,6 @@
                   </div>
               </div>
           </li>
-          <li class='item' style="background-image: url('static/images/cybersentry_AI.jpeg')">
-              <div class='content'>
-                  <h1 class='title ' style="color : black;" >CYBERSENTRY_AI</h1>
-                  <p class='description' style="color : black;" >CyberSentry_AI is a bot specially made for cybersecurity and also functions as a normal bot. It continuously monitors networks, identifies suspicious activities, and provides real-time alerts to mitigate threats. CyberSentry_AI ensures robust security while also handling regular bot tasks.</p>
-                  <div class="button" >
-                      <button id="CS" onclick="window.location.href='{{ url_for('cybersentry_ai.index') }}'">CYBERSENTRY_AI</button>
-                  </div>
-              </div>
-          </li>
-          <li class='item' style="background-image: url('static/images/filefender.jpg')">
-              <div class='content'>
-                  <h1 class='title'>FILE FENDER</h1>
-                  <p class='description'>Scan your files for viruses using our service. We check files against multiple popular databases to ensure they are free from threats.</p>
-                  <div class="button">
-                      <button  id="FF" onclick="window.location.href='{{ url_for('filescanner.index') }}'">FILE FENDER</button>
-                  </div>
-              </div>
-          </li>
-          <li class='item' style="background-image: url('static/images/portscanner.jpeg')">
-              <div class='content'>
-                  <h1 class='title'>PORTSCANNER</h1>
-                  <p class='description'>Portscanner is a network security tool used to identify open ports on a target system. By scanning for vulnerabilities, it helps in assessing the security posture of networks and devices. Portscanner is essential for penetration testing and network security audits.</p>
-                  <div class="button" >
-                      <button id="PS" onclick="window.location.href='{{ url_for('portscanner.index') }}'">PORT SCANNER</button>
-                  </div>
-              </div>
-          </li>
-          <li class='item' style="background-image: url('static/images/snapspeak.jpg')">
-            <div class='content'>
-                <h1 class='title'>SNAPSPEAK_AI</h1>
-                <p class='description'> SnapSpeak AI is an advanced image analysis tool designed to generate detailed captions, detect steganography, extract metadata, and create unique image hashes. It offers a user-friendly interface for uploading images and quickly analyzing them.</p>
-                <div class="button" >
-                    <button id="LA" onclick="window.location.href='{{ url_for('snapspeak_ai.index') }}'">SNAPSPEAK_AI</button>
-                </div>
-            </div>
-        </li>
           <li class='item' style="background-image: url('static/images/enscan.png')">
             <div class='content'>
                 <h1 class='title'>SITE INDEX</h1>
