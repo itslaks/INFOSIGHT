@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-VIRUSTOTAL_API_KEY = '5d0e2769a6d70bb561d0ddb24a4d05020dfe1aaccbde61879be7d50e289b82f1'
+VIRUSTOTAL_API_KEY = 'a824ae7f8074b067df8de8c07ddf0ef7fe3c4911bc119374c6d79349e897ff7f'
 VIRUSTOTAL_API_URL = 'https://www.virustotal.com/api/v3'
 
 filescanner = Blueprint('filescanner', __name__, template_folder='templates')

@@ -20,7 +20,7 @@ def load_responses():
 responses = load_responses()
 
 # Configure Gemini API
-genai.configure(api_key='YOUR_API_KEY')
+genai.configure(api_key='AIzaSyBZgKntCoDX9ofCAntTRxWTEc0N37fxlQk')
 model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
 def capture_output(func):

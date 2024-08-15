@@ -13,7 +13,7 @@ infosight_ai = Blueprint('infosight_ai', __name__, template_folder='templates')
 logging.basicConfig(level=logging.DEBUG)
 
 # API Key for Gemini model
-GENAI_API_KEY = "AIzaSyC-1qVVZ3fR64oa8Rp5MamVqolaYJyl47Q"
+GENAI_API_KEY = "AIzaSyDhVqSVp2bR7saU4RwPDYC4QkAkWqtRsL8"
 
 # Configure Gemini model
 genai.configure(api_key=GENAI_API_KEY)

@@ -12,7 +12,7 @@ import numpy as np
 lana_ai = Blueprint('lana_ai', __name__, template_folder='templates')
 
 # API key
-GOOGLE_API_KEY = 'AIzaSyDEk2W-kpwq8hQOQLiP6zwyM4bwgg3xPsc'
+GOOGLE_API_KEY = 'AIzaSyB0Uc1lxcWlvXP3kTb2jbpiAY91QgRyK9U'
 
 # Initialize APIs
 from google.generativeai import configure, GenerativeModel
