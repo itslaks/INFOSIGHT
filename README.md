@@ -15,10 +15,10 @@ Meet **LANA_AI**, your intelligent virtual assistant. Utilizing generative AI mo
 **CyberSentry_AI** is your cybersecurity sentinel, monitoring networks to identify suspicious activities and providing real-time alerts to mitigate threats. Additionally, it handles routine tasks to ensure robust security.
 ### 🌐 **Portscanner**
 **Portscanner** is a network security tool that identifies open ports on target systems. It scans for vulnerabilities to assist in network and device security assessments. Essential for penetration testing and network security audits!
-### 📝 **Infoscan**
-**Infoscan** scans files for viruses using multiple popular databases. Ensure your files are free from threats and add an extra layer of security to your file handling.
+### 📝 **Site Index**
+**Site Index** offers comprehensive analysis for email domains, URL classification, and DNS enumeration. It provides detailed JSON responses with domain information, URL risk assessments, and DNS records, along with clear definitions for each result
 ### 📸 **Snapspeak_AI**
-**Snapspeak_AI** provides descriptions of images uploaded by users. Perfect for extracting and understanding image content.
+**Snapspeak_AI** it is an advanced image analysis tool designed to generate detailed captions, detect steganography, extract metadata, and create unique image hashes. It offers a user-friendly interface for uploading images and quickly analyzing them.
 ### 🦠 **FileFender**
 **FileFender** checks whether a file contains any viruses. Keep your files safe with our reliable virus detection tool.
 ## ⚙️ **Installation**
