@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSeeker - Advanced Web Analysis Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at center, #1a1a1a, #0d0d0d);
+            color: #dcdcdc;
+            overflow-x: hidden;
+        }
+        h1, p.lead {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .container {
+            background: linear-gradient(135deg, #1f1f1f, #111);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.1), 0 0 60px rgba(0, 255, 204, 0.1);
+            padding: 40px;
+            margin-top: 60px;
+            color: #00ffcc;
+        }
+        h1 {
+            font-size: 3rem;
+            color: #00ffcc;
+            text-align: center;
+            text-shadow: 3px 3px 6px rgba(0, 255, 204, 0.2);
+        }
+        p.lead {
+            color: #00ffcc;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+        .form-label {
+            color: #00ffcc;
+        }
+        #urlInput {
+            background-color: #292929;
+            border: 1px solid #00ffcc;
+            color: #00ffcc;
+            border-radius: 6px;
+        }
+        #urlInput:focus {
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.8);
+        }
+        .form-check-input {
+            background-color: #333;
+            border-color: #00ffcc;
+        }
+        .form-check-label {
+            color: #dcdcdc;
+        }
+        .btn-primary {
+            background-color: #00ffcc;
+            border-color: #00ffcc;
+            color: #0d0d0d;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #00e6b8;
+            border-color: #00e6b8;
+            color: #1a1a1a;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .spinner-border {
+            width: 4rem;
+            height: 4rem;
+            color: #00ffcc;
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #292929;
+            color: #dcdcdc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #00ffcc;
+        }
+        .result-section {
+            background-color: #1f1f1f;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 6px solid #00ffcc;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+        }
+        .result-section h3 {
+            color: #00ffcc;
+            font-size: 1.5rem;
+        }
+        .result-section h4 {
+            color: #00e6b8;
+            font-size: 1.3rem;
+        }
+        .form-check-input:checked {
+            background-color: #00ffcc;
+            border-color: #00ffcc;
+        }
+        #results {
+            margin-top: 50px;
+        }
+        .container input::placeholder {
+            color: #b3b3b3;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WebSeeker</h1>
+        <p class="lead">Advanced Web Analysis Tool</p>
+
+        <div class="mb-4">
+            <label for="urlInput" class="form-label">Enter URL:</label>
+            <input type="text" class="form-control" id="urlInput" placeholder="https://example.com">
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Select Scan Types:</label>
+            <div id="scanTypes">
+                <!-- Scan types will be dynamically populated here -->
+            </div>
+        </div>
+
+        <button class="btn btn-primary w-100" onclick="startScan()">Start Scan</button>
+
+        <div id="loading" class="mt-4">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Scanning in progress... This may take a few minutes.</p>
+        </div>
+
+        <div id="results" class="mt-4"></div>
+    </div>
+
+    <script>
+        // Populate scan types
+        const scanTypes = {
+            'quick_scan': 'Quick Scan',
+            'intense_scan': 'Intense Scan',
+            'ping_scan': 'Ping Scan',
+            'service_version_scan': 'Service Version Scan',
+            'os_detection_scan': 'OS Detection Scan',
+            'syn_scan': 'SYN Scan',
+            'udp_scan': 'UDP Scan',
+            'full_port_scan': 'Full Port Scan',
+            'script_scan': 'Script Scan'
+        };
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            const scanTypesContainer = document.getElementById('scanTypes');
+            for (const [value, label] of Object.entries(scanTypes)) {
+                const div = document.createElement('div');
+                div.className = 'form-check scan-type';
+                div.innerHTML = `
+                    <input class="form-check-input" type="checkbox" value="${value}" id="${value}">
+                    <label class="form-check-label" for="${value}">${label}</label>
+                `;
+                scanTypesContainer.appendChild(div);
+            }
+        });
+    
+        function startScan() {
+            const url = document.getElementById('urlInput').value.trim();
+            const selectedScans = Array.from(document.querySelectorAll('#scanTypes input:checked')).map(input => input.value);
+    
+            if (!url) {
+                alert('Please enter a URL.');
+                return;
+            }
+    
+            if (selectedScans.length === 0) {
+                alert('Please select at least one scan type.');
+                return;
+            }
+    
+            // Log the URL and selected scans for debugging
+            console.log("URL: ", url);
+            console.log("Selected scans: ", selectedScans);
+    
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').innerHTML = '';
+    
+            // Make the request to the backend
+            axios.get('/webseeker/start_scan', {
+                params: {
+                    url: url,
+                    scans: selectedScans
+                }
+            })
+            .then(response => {
+                document.getElementById('loading').style.display = 'none';
+                displayResults(response.data);
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                handleError(error);
+            });
+        }
+    
+        function displayResults(results) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+    
+            for (const [key, value] of Object.entries(results)) {
+                const section = document.createElement('div');
+                section.className = 'result-section';
+                section.innerHTML = `<h3>${formatTitle(key)}</h3>`;
+    
+                if (key === 'nmap') {
+                    for (const [scanType, scanResult] of Object.entries(value)) {
+                        const scanSection = document.createElement('div');
+                        scanSection.innerHTML = `<h4>${formatTitle(scanType)}</h4>`;
+                        if (scanResult.status === 'completed') {
+                            scanSection.innerHTML += `<pre>${formatNmapOutput(scanResult.output)}</pre>`;
+                        } else {
+                            scanSection.innerHTML += `<p>Error: ${scanResult.error}</p>`;
+                        }
+                        section.appendChild(scanSection);
+                    }
+                } else {
+                    for (const [subKey, subValue] of Object.entries(value)) {
+                        if (typeof subValue === 'object') {
+                            section.innerHTML += `<p><strong>${formatTitle(subKey)}:</strong></p>`;
+                            section.innerHTML += `<pre>${JSON.stringify(subValue, null, 2)}</pre>`;
+                        } else {
+                            section.innerHTML += `<p><strong>${formatTitle(subKey)}:</strong> ${subValue}</p>`;
+                        }
+                    }
+                }
+                resultsContainer.appendChild(section);
+            }
+        }
+    
+        function handleError(error) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = `<div class="alert alert-danger" role="alert">Error: ${error.response ? error.response.data.error : error.message}</div>`;
+        }
+    
+        function formatTitle(key) {
+            return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        }
+    
+        function formatNmapOutput(output) {
+            // Custom formatting for Nmap output
+            return output
+                .replace(/(\d{1,5}\/tcp|\d{1,5}\/udp)/g, '<strong>$1</strong>')
+                .replace(/(\d{1,5}\/\w+)/g, '<strong>$1</strong>');
+        }
+    </script>
+</body>
+</html>

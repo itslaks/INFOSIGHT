@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSentry_AI: Advanced Neural Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #00fff2;
+            --secondary-color: #ff00ff;
+            --bg-color: #000814;
+            --text-color: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        /* Container to wrap the entire content */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px var(--primary-color);
+        }
+
+        /* Main content layout */
+        .main-content {
+            display: flex;
+            gap: 20px;
+            flex-grow: 1; /* Fills available space */
+        }
+
+        /* Chat container */
+        .chat-container {
+            background-color: rgba(0, 255, 242, 0.05);
+            border: 1px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 2;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 15px rgba(0, 255, 242, 0.1);
+            max-height: calc(100vh - 200px); /* Ensure the chatbox doesn't overflow */
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .user-message {
+            background-color: rgba(0, 255, 242, 0.1);
+            border: 1px solid var(--primary-color);
+            align-self: flex-end;
+            color: var(--primary-color);
+        }
+
+        .ai-message {
+            background-color: rgba(255, 0, 255, 0.1);
+            border: 1px solid var(--secondary-color);
+            align-self: flex-start;
+            color: var(--secondary-color);
+        }
+
+        /* Flexbox container for side panel */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-basis: 250px; /* Reduced the width from 350px to 250px */
+        }
+
+        /* Neural activity panel */
+        .neural-activity {
+            background-color: rgba(0, 255, 242, 0.05);
+            border: 1px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 8px;
+            height: 350px;
+            box-shadow: 0 0 15px rgba(0, 255, 242, 0.1);
+        }
+
+        /* Globe container */
+        #globe-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* History panel */
+        .history-panel {
+    background-color: rgba(255, 0, 255, 0.05);
+    border: 1px solid var(--secondary-color);
+    border-radius: 15px;
+    padding: 15px;
+    flex-grow: 1;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+    max-height: 350px; /* Set a max height */
+    overflow: hidden; /* Hide overflow initially */
+}
+
+.history-list {
+    margin-bottom: 15px;
+    flex-grow: 1;
+    width: 100%;
+    overflow-y: auto; /* Enable scrolling */
+    max-height: 150px; /* Limit height to show only a few items */
+}
+
+        .history-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-bottom: 1px solid var(--secondary-color);
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .history-item:hover {
+            background-color: rgba(255, 0, 255, 0.2);
+        }
+
+        .highlighted-item {
+            background-color: rgba(255, 0, 255, 0.2);
+            box-shadow: 0 0 10px var(--secondary-color);
+        }
+
+        /* Input area */
+        .input-area {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        #userInput {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid var(--primary-color);
+            background-color: rgba(0, 255, 242, 0.1);
+            color: var(--text-color);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 16px;
+            border-radius: 10px;
+        }
+
+        #sendButton, #newChatButton {
+            padding: 12px 25px;
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        #sendButton:hover, #newChatButton:hover {
+            background-color: var(--secondary-color);
+            box-shadow: 0 0 20px var(--secondary-color);
+        }
+
+        #newChatButton {
+            margin-top: auto; /* Pushes the button to the bottom */
+            align-self: center; /* Center horizontally */
+            width: 100%; /* Ensures the button stays centered and responsive */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <h1>CyberSentry_AI</h1>
+        </header>
+        <main class="main-content">
+            <!-- Side panel with Neural Activity and Command History -->
+            <div class="side-panel">
+                <div class="neural-activity">
+                    <div id="globe-container"></div>
+                </div>
+                <div class="history-panel">
+                    <h3>Command History</h3>
+                    <div class="history-list" id="historyList"></div>
+                    <button id="newChatButton">New Chat</button>
+                </div>
+            </div>
+
+            <!-- Chatbox container -->
+            <div class="chat-container" id="chatbox"></div>
+        </main>
+
+        <!-- Input area for user input -->
+        <footer class="input-area">
+            <input type="text" id="userInput" placeholder="Enter your command...">
+            <button id="sendButton">Send</button>
+        </footer>
+    </div>
+
+    <script>
+        // 3D Network Traffic Visualization
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, 320 / 320, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(320, 320);
+        document.getElementById('globe-container').appendChild(renderer.domElement);
+
+        const geometry = new THREE.SphereGeometry(1, 32, 32);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x00fff2,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        const globe = new THREE.Mesh(geometry, material);
+        scene.add(globe);
+
+        const nodes = [];
+        const connections = [];
+
+        // Create nodes
+        for (let i = 0; 100 > i; i++) {
+            const phi = Math.acos(-1 + (2 * Math.random()));
+            const theta = 2 * Math.PI * Math.random();
+            const x = Math.sin(phi) * Math.cos(theta);
+            const y = Math.sin(phi) * Math.sin(theta);
+            const z = Math.cos(phi);
+            
+            const nodeGeometry = new THREE.SphereGeometry(0.01, 8, 8);
+            const nodeMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+            const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
+            node.position.set(x, y, z);
+            globe.add(node);
+            nodes.push(node);
+        }
+
+        // Create connections
+        for (let i = 0; i < 150; i++) {
+            const startNode = nodes[Math.floor(Math.random() * nodes.length)];
+            const endNode = nodes[Math.floor(Math.random() * nodes.length)];
+            
+            const points = [];
+            points.push(startNode.position);
+            
+            const midPoint = new THREE.Vector3().addVectors(startNode.position, endNode.position);
+            midPoint.multiplyScalar(0.5);
+            midPoint.normalize();
+            midPoint.multiplyScalar(1 + Math.random() * 0.5);
+            points.push(midPoint);
+            points.push(endNode.position);
+
+            const curve = new THREE.CatmullRomCurve3(points);
+            const curveGeometry = new THREE.TubeGeometry(curve, 20, 0.002, 8, false);
+            const curveMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x00fff2, 
+                transparent: true, 
+                opacity: 0.5 
+            });
+            const curveObject = new THREE.Mesh(curveGeometry, curveMaterial);
+            globe.add(curveObject);
+            
+            connections.push({
+                object: curveObject,
+                curve: curve,
+                speed: Math.random() * 0.02 + 0.01,
+                progress: 0
+            });
+        }
+
+        camera.position.z = 2;
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        window.addEventListener('mousemove', onMouseMove, false);
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate globe
+            globe.rotation.y += 0.001;
+
+            connections.forEach(conn => {
+                conn.progress += conn.speed;
+                if (conn.progress > 1) conn.progress = 0;
+
+                const point = conn.curve.getPoint(conn.progress);
+                const scale = Math.sin(conn.progress * Math.PI);
+                conn.object.scale.setScalar(scale);
+            });
+
+            // Update node colors based on mouse position
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(nodes);
+            
+            nodes.forEach(node => {
+                node.material.color.setHex(0xff00ff);
+            });
+
+            if (intersects.length > 0) {
+                intersects[0].object.material.color.setHex(0xffff00);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+       // Chat and History functionality
+let history = [];
+let currentChatId = Date.now();
+
+function sendMessage() {
+    var userInput = document.getElementById('userInput').value;
+    if (userInput.trim() === '') return;
+
+    const messageObj = {
+        chatId: currentChatId,
+        userMessage: userInput,  // Store user message
+        aiMessage: '',           // Placeholder for AI response
+        timestamp: Date.now()
+    };
+
+    // Display user message in chatbox
+    document.getElementById('chatbox').innerHTML += '<div class="message user-message">' + userInput + '</div>';
+    document.getElementById('userInput').value = '';
+
+    // Simulate AI response after a short delay
+    setTimeout(() => {
+        const aiResponses = [
+            "Analyzing input... Processing quantum algorithms.",
+            "Neural patterns recognized. Formulating response.",
+            "Cybernetic interface engaged. Synthesizing data streams.",
+            "AI subroutines activated. Preparing holographic output.",
+            "Quantum encryption initialized. Secure channel established."
+        ];
+        const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+
+        // Display AI response in chatbox
+        document.getElementById('chatbox').innerHTML += '<div class="message ai-message">' + randomResponse + '</div>';
+        scrollToBottom();
+
+        // Update the history with AI response
+        messageObj.aiMessage = randomResponse;
+        history.push(messageObj); // Store both user and AI messages in history
+
+        updateHistory();
+    }, 1000);
+}
+
+function scrollToBottom() {
+    var chatbox = document.getElementById('chatbox');
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+function updateHistory() {
+    const historyList = document.getElementById('historyList');
+    historyList.innerHTML = '';
+
+    // Limit to the last 3 messages
+    const displayHistory = history.slice(-3);
+
+    displayHistory.forEach((item, index) => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.textContent = item.userMessage; // Display user message in history
+        historyItem.onclick = () => loadChat(item.chatId, index);
+        historyList.appendChild(historyItem);
+    });
+}
+
+
+function loadChat(chatId, index) {
+    currentChatId = chatId;
+    const chatbox = document.getElementById('chatbox');
+    chatbox.innerHTML = '';
+
+    // Loop through the history up to the clicked chat
+    history.slice(0, index + 1).forEach(item => {
+        if (item.chatId === chatId) {
+            // Display both user message and AI response
+            chatbox.innerHTML += `<div class="message user-message">${item.userMessage}</div>`;
+            chatbox.innerHTML += `<div class="message ai-message">${item.aiMessage}</div>`;
+        }
+    });
+
+    // Highlight the selected history item
+    document.querySelectorAll('.history-item').forEach(item => item.classList.remove('highlighted-item'));
+    document.querySelectorAll('.history-item')[index].classList.add('highlighted-item');
+
+    // Scroll to the last message in the chat
+    const messageElements = chatbox.querySelectorAll('.user-message, .ai-message');
+    if (messageElements.length > 0) {
+        messageElements[messageElements.length - 1].scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function newChat() {
+    currentChatId = Date.now();
+    document.getElementById('chatbox').innerHTML = '';
+    document.getElementById('userInput').value = '';
+}
+
+// Event Listeners
+document.getElementById('sendButton').addEventListener('click', sendMessage);
+document.getElementById('userInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+document.getElementById('newChatButton').addEventListener('click', newChat);
+
+// Initialize history
+updateHistory();
+
+    </script>
+</body>
+</html>
